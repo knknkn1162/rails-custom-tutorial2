@@ -8,14 +8,15 @@ jobs:
           BUNDLE_JOBS: 3
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
-          PGHOST: 127.0.0.1
-          PGUSER: circleci-tutorial-ruby
           RAILS_ENV: test
-      - image: circleci/postgres:9.5-alpine
+      - image: circleci/mysql:5.7
         environment:
-          POSTGRES_USER: circleci-tutorial-ruby
-          POSTGRES_DB: rails_tutorial
-          POSTGRES_PASSWORD: ""
+          # see also https://hub.docker.com/_/mysql/
+          ## required environment variable
+          MYSQL_ROOT_PASSWORD: ubuntu
+          ## optional
+          MYSQL_USER: circleci-tutorial-ruby
+          MYSQL_DATABASE: rails_tutorial
     steps:
       - checkout
 
