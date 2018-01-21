@@ -12,6 +12,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_DATABASE: rails_tutorial
           DB_USERNAME: circleci-test-user
+          DB_PASSWORD: circleci_password
           TZ: /usr/share/zoneinfo/Asia/Tokyo # Time Zoneを指定
       - image: circleci/mysql:5.7
         environment:
@@ -20,6 +21,7 @@ jobs:
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: rails_tutorial
           MYSQL_USER: circleci-test-user
+          MYSQL_PASSWORD: circleci_password
           MYSQL_ROOT_HOST: '%'
           MYSQL_HOST: 127.0.0.1
     steps:
