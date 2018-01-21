@@ -11,7 +11,6 @@ jobs:
           RAILS_ENV: test
           # MYSQL_USER: circleci-tutorial-ruby
           # MYSQL_DATABASE: rails_tutorial
-          TZ: /usr/share/zoneinfo/Asia/Tokyo
       - image: circleci/mysql:5.7
         environment:
           # see also https://hub.docker.com/_/mysql/
@@ -19,11 +18,11 @@ jobs:
           ## optional
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_USER: root # circleci-tutorial-ruby
-          MYSQL_DATABASE: rails_tutorial
-          MYSQL_PASSWORD: ''
+          MYSQL_DATABASE: repeat_app_test
           MYSQL_ROOT_HOST: '%'
           MYSQL_HOST: 127.0.0.1
-          TZ: /usr/share/zoneinfo/Asia/Tokyo
+    environment:
+      TZ: /usr/share/zoneinfo/Asia/Tokyo # Time Zoneを指定
     steps:
       - checkout
 
