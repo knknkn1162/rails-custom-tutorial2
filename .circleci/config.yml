@@ -54,7 +54,7 @@ jobs:
             - ~/.cache/yarn
 
       - run:
-        name: Wait for DB
+          name: Wait for DB
           # default port for mysql is 3306
           command: dockerize -wait tcp://localhost:3306 -timeout 1m
 
