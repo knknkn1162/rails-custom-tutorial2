@@ -27,10 +27,6 @@ require 'rspec/rails'
 ActiveRecord::Migration.maintain_test_schema!
 
 RSpec.configure do |config|
-  # For Rails 5, use the following configuration:
-  # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.public_file_server.enabled = false
-  config.eager_load = false
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
