@@ -14,7 +14,7 @@ jobs:
         environment:
           # see also https://hub.docker.com/_/mysql/
           ## required environment variable
-          MYSQL_ROOT_PASSWORD: ubuntu
+          MYSQL_ROOT_PASSWORD: password
           ## optional
           MYSQL_USER: circleci-tutorial-ruby
           MYSQL_DATABASE: rails_tutorial

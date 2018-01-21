@@ -7,7 +7,8 @@
 default: &default
   adapter: mysql2
   encoding: utf8
-  username: <%= ENV['DB_USERNAME'] || 'root' %>
+  # MYSQL_* enviroment varable is based on ./circleci/config.yml
+  username: <%= ENV['DB_USERNAME'] || ENV['MYSQL_USER'] || 'root' %>
   password: <%= ENV['DB_PASSWORD'] || ENV['MYSQL_ROOT_PASSWORD'] %>
   host: <%= ENV['DB_HOST'] || ENV['MYSQL_ROOT_HOST'] || '127.0.0.1' %>
 
@@ -24,7 +25,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: repeat_app_test
+  database: <%=ENV['MYSQL_DATABASE'] || 'repeat_app_test' %>
 
 production:
   <<: *default
