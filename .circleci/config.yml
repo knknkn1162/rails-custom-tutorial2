@@ -51,10 +51,10 @@ jobs:
           command: yarn install --cache-folder ~/.cache/yarn
 
       # Store yarn / webpacker cache
-      - save_cache:
-          key: rails-demo-yarn-{{ checksum "yarn.lock" }}
-          paths:
-            - ~/.cache/yarn
+      # - save_cache:
+      #    key: rails-demo-yarn-{{ checksum "yarn.lock" }}
+      #    paths:
+      #      - ~/.cache/yarn
 
       - run:
           name: Wait for DB
@@ -72,7 +72,7 @@ jobs:
       # Run rspec in parallel
       - type: shell
         command: |
-          bundle exec rspec --profile 10 \
+          spring rspec --profile 10 \
                             --format RspecJunitFormatter \
                             --out test_results/rspec.xml \
                             --format progress \
