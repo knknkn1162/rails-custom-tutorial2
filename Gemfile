@@ -54,6 +54,7 @@ group :development, :test do
   gem 'rails_best_practices'
   gem 'brakeman'
   gem 'simplecov'
+  gem 'rspec_junit_formatter'
 end
 
 group :development do
