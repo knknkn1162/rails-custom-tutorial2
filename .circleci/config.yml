@@ -9,8 +9,9 @@ jobs:
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
-          #DB_HOST: 127.0.0.1
-          #DB_DATABASE: rails_tutorial
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: rails_tutorial
+          DB_USERNAME: circleci-test-user
           TZ: /usr/share/zoneinfo/Asia/Tokyo # Time Zoneを指定
       - image: circleci/mysql:5.7
         environment:
@@ -18,6 +19,7 @@ jobs:
           ## optional
           MYSQL_ALLOW_EMPTY_PASSWORD: true
           MYSQL_DATABASE: rails_tutorial
+          MYSQL_USER: circleci-test-user
           MYSQL_ROOT_HOST: '%'
           MYSQL_HOST: 127.0.0.1
     steps:
