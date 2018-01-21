@@ -9,6 +9,8 @@ jobs:
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
+          MYSQL_USER: circleci-tutorial-ruby
+          MYSQL_DATABASE: rails_tutorial
           TZ: /usr/share/zoneinfo/Asia/Tokyo
       - image: circleci/mysql:5.7
         environment:
@@ -16,8 +18,6 @@ jobs:
           ## required environment variable
           MYSQL_ROOT_PASSWORD: password
           ## optional
-          MYSQL_USER: circleci-tutorial-ruby
-          MYSQL_DATABASE: rails_tutorial
           MYSQL_ROOT_HOST: '%'
           TZ: /usr/share/zoneinfo/Asia/Tokyo
     steps:
