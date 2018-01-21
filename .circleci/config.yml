@@ -20,6 +20,8 @@ jobs:
           MYSQL_DATABASE: rails_tutorial
           MYSQL_ROOT_HOST: '%'
           TZ: /usr/share/zoneinfo/Asia/Tokyo
+        ports:
+          - 13306:3306
     steps:
       - checkout
 
