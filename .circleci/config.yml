@@ -18,10 +18,7 @@ jobs:
           ## optional
           MYSQL_USER: circleci-tutorial-ruby
           MYSQL_DATABASE: rails_tutorial
-          MYSQL_ROOT_HOST: '%'
           TZ: /usr/share/zoneinfo/Asia/Tokyo
-        ports:
-          - 13306:3306
     steps:
       - checkout
 
@@ -46,12 +43,6 @@ jobs:
           paths:
             - vendor/bundle
 
-      # Only necessary if app uses webpacker or yarn in some other way
-      - restore_cache:
-          keys:
-            - rails-demo-yarn-{{ checksum "yarn.lock" }}
-            - rails-demo-yarn-
-
       - run:
           name: Yarn Install
           command: yarn install --cache-folder ~/.cache/yarn
@@ -63,8 +54,9 @@ jobs:
             - ~/.cache/yarn
 
       - run:
-          name: Wait for DB
-          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+        name: Wait for DB
+          # default port for mysql is 3306
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
 
       - run:
           name: Database setup
