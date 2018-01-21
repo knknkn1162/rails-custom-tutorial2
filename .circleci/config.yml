@@ -17,6 +17,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: password
           ## optional
           MYSQL_USER: circleci-tutorial-ruby
+          MYSQL_PASSWORD: password
           MYSQL_DATABASE: rails_tutorial
           MYSQL_ROOT_HOST: '%'
           MYSQL_HOST: 127.0.0.1
