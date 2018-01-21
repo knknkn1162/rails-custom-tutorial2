@@ -40,7 +40,7 @@ group :development, :test do
   gem 'rspec-rails'
   gem 'mysql2'
   # load rspec faster
-  gem 'spring-commands-rspec' 
+  gem 'spring-commands-rspec'
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
   # Adds support for Capybara system testing and selenium driver

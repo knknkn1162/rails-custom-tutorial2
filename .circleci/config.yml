@@ -9,8 +9,8 @@ jobs:
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
-          MYSQL_USER: circleci-tutorial-ruby
-          MYSQL_DATABASE: rails_tutorial
+          #MYSQL_USER: circleci-tutorial-ruby
+          #MYSQL_DATABASE: rails_tutorial
       - image: circleci/mysql:5.7
         environment:
           # see also https://hub.docker.com/_/mysql/
