@@ -9,6 +9,9 @@ jobs:
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
+          PGHOST: 127.0.0.1
+          PGUSER: circleci-tutorial-ruby
+          TZ: /usr/share/zoneinfo/Asia/Tokyo
       - image: circleci/mysql:5.7
         environment:
           # see also https://hub.docker.com/_/mysql/
@@ -17,6 +20,7 @@ jobs:
           ## optional
           MYSQL_USER: circleci-tutorial-ruby
           MYSQL_DATABASE: rails_tutorial
+          TZ: /usr/share/zoneinfo/Asia/Tokyo
     steps:
       - checkout
 
