@@ -18,7 +18,7 @@ jobs:
         environment:
           # see also https://hub.docker.com/_/mysql/
           ## optional
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
+          MYSQL_ROOT_PASSWORD: root_password
           MYSQL_DATABASE: rails_tutorial
           MYSQL_USER: circleci-test-user
           MYSQL_PASSWORD: circleci_password
