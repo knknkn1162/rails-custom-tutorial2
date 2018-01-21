@@ -18,6 +18,9 @@ jobs:
           ## required environment variable
           MYSQL_ROOT_PASSWORD: password
           ## optional
+          MYSQL_USER: circleci-tutorial-ruby
+          MYSQL_DATABASE: rails_tutorial
+          MYSQL_PASSWORD: ''
           MYSQL_ROOT_HOST: '%'
           TZ: /usr/share/zoneinfo/Asia/Tokyo
     steps:
