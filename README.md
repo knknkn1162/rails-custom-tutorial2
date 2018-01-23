@@ -1,8 +1,10 @@
 # README 
 
-## preparation
+## Preparation
 
-### rspec-rails
+### Gems
+
++ Rspec-rails
 
 + add `rspec-rails` in GemFile and initalize as follows:
 
@@ -13,7 +15,7 @@ rails g rspec:install
 
 To install gems without production, exec `bundle install --without production`. With this option, the setting file `.bundle/config` is generated automatically.
 
-### database setting for development & test.
+### Database setting for development & test.
 
 Before migration, You should create new user and databases for development and test:
 
@@ -58,10 +60,10 @@ Query OK, 0 rows affected (0.01 sec)
 
 This work gets to use `rails db:migrate in your development.
 
-### database setting for production
+### Database setting for production
 
 To use MySQL in production, install `mysql2` gem in the production and then follow the link, https://devcenter.heroku.com/articles/cleardb#provisioning-the-add-on.
 
-### configure database.yml
+### Configure database.yml
 
 see `config/database.yml`!
