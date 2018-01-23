@@ -77,10 +77,13 @@ see `config/database.yml`!
 ### heroku
 
 ```bash
-$ heroku maintenance:on
-git push heroku master
+
+$ git push heroku master
 # reset database
-$ heroku run rails db:migrate:reset
+$ heroku maintenance:on
+$ heroku pg:reset DATABASE
 $ heroku run rails db:migrate
+$ heroku run rails db:seed
+$ heroku restart
 $ heroku maintenance:off
 ```
