@@ -70,6 +70,10 @@ see `config/database.yml`!
 
 ## development
 
+### model
+
++ to confirm data model not to change database, exec `rails console --sandbox`. Also the command, `rails db:console` enables direct connection to database. 
+
 ## test
 
 ## production
