@@ -231,6 +231,8 @@ GEM
       childprocess (~> 0.5)
       rubyzip (~> 1.0)
     sexp_processor (4.10.0)
+    shoulda-callback-matchers (1.1.4)
+      activesupport (>= 3)
     simplecov (0.15.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
@@ -303,6 +305,7 @@ DEPENDENCIES
   rubocop
   sass-rails
   selenium-webdriver
+  shoulda-callback-matchers
   simplecov
   spring
   spring-commands-rspec
