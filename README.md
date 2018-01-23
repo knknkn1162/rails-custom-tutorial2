@@ -6,7 +6,7 @@
 
 + Rspec-rails
 
-+ add `rspec-rails` in GemFile and initalize as follows:
+Add `rspec-rails` in GemFile and initalize as follows:
 
 ```bash
 # see also, https://github.com/rspec/rspec-rails
@@ -14,6 +14,11 @@ rails g rspec:install
 ```
 
 To install gems without production, exec `bundle install --without production`. With this option, the setting file `.bundle/config` is generated automatically.
+
++ factory_bot_rails
+
+configure as the link, https://github.com/thoughtbot/factory_bot/blob/master/GETTING_STARTED.md#rspec.
+
 
 ### Database setting for development & test.
 
