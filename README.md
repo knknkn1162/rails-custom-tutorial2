@@ -58,7 +58,7 @@ Query OK, 0 rows affected (0.01 sec)
 # you can create test database in the same way! 
 ```
 
-This work gets to use `rails db:migrate in your development.
+This work gets to use `rails db:migrate` in your development.
 
 ### Database setting for production
 
@@ -67,3 +67,20 @@ To use MySQL in production, install `mysql2` gem in the production and then foll
 ### Configure database.yml
 
 see `config/database.yml`!
+
+## development
+
+## test
+
+## production
+
+### heroku
+
+```bash
+$ heroku maintenance:on
+git push heroku master
+# reset database
+$ heroku run rails db:migrate:reset
+$ heroku run rails db:migrate
+$ heroku maintenance:off
+```
