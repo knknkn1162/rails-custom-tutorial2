@@ -54,4 +54,19 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  context 'when callbacks' do
+    let(:user) { create(:user) }
+    it 'calls downcase_email before_save' do
+      expect(user).to callback(:downcase_email).before(:save)
+    end
+  end
+
+  context 'when private method calls' do
+    it 'downcases email' do
+      user = build(:user, email: 'Foo@ExAmPLe.COm')
+      user.send(:downcase_email)
+      expect(user.email).to eq 'foo@example.com'
+    end
+  end
 end
