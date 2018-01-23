@@ -8,6 +8,6 @@ RSpec.describe "static_pages/home.html.erb", type: :view do
 
   it 'displays sign up now' do
     render
-    expect(rendered).to have_link href: '#'
+    expect(rendered).to have_link href: '/signup'
   end
 end
