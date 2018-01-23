@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  context 'when valid name contains' do
+  context 'when invalid name contains' do
     it 'should be non-empty name' do
       user = build(:user, name: ' ')
       expect(user).not_to be_valid
@@ -13,7 +13,7 @@ RSpec.describe User, type: :model do
     end
   end
 
-  context 'when the valid email contains' do
+  context 'when the invalid email contains' do
     it 'should be non-empty email' do
       user = build(:user, email: ' ')
       expect(user).not_to be_valid
@@ -34,9 +34,15 @@ RSpec.describe User, type: :model do
         expect(user).not_to be_valid
       end
     end
+
+    it 'should be unique email' do
+      create(:user)
+      duplicated_user = build(:user)
+      expect(duplicated_user).not_to be_valid
+    end
   end
 
-  context 'when valid email contains' do
+  context 'when the valid email contains' do
     it 'should be email-formatted' do
       %w[user@example.com
          USER@foo.COM
