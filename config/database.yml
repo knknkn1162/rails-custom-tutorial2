@@ -10,7 +10,6 @@ default: &default
   # MYSQL_* enviroment varable is based on ./circleci/config.yml
   username: <%= ENV['DB_USERNAME'] || ENV['MYSQL_USER'] || 'repeat_app_user' %>
   password: <%= ENV['DB_PASSWORD'] || ENV['MYSQL_PASSWORD'] || 'gEpA.#sS8!' %>
-  host: <%= ENV['DB_HOST'] || ENV['MYSQL_HOST'] || '127.0.0.1' %>
 
 development:
   <<: *default
@@ -24,6 +23,7 @@ development:
 test:
   <<: *default
   database: <%= ENV['DB_DATABASE'] || ENV['MYSQL_DATABASE'] || 'repeat_app_test' %>
+  host: <%= ENV['DB_HOST'] || ENV['MYSQL_HOST'] || '127.0.0.1' %>
 
 production:
   <<: *default
