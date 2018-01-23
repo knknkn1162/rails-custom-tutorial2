@@ -66,6 +66,7 @@ jobs:
 
       - run:
           name: Database setup
+          # exec `rails db:migrate` locally to generate `db/schema.rb`!
           command: bin/rails db:schema:load --trace
 
       - run:

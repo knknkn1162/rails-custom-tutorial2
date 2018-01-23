@@ -55,6 +55,7 @@ group :development, :test do
   gem 'brakeman'
   gem 'simplecov'
   gem 'rspec_junit_formatter'
+  gem 'shoulda-callback-matchers'
 end
 
 group :development do
