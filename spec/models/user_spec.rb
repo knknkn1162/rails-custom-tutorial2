@@ -42,6 +42,19 @@ RSpec.describe User, type: :model do
     end
   end
 
+  context 'when the invalid password contains' do
+    it 'should be present(nonblank) password' do
+      user = build(:user, password: ' ' * 6)
+      expect(user).not_to be_valid
+    end
+
+    it 'should be at least 6 characters' do
+      invalid_password = 'a' * 5
+      user = build(:user, password: invalid_password, password_confirmation: 5)
+      expect(user).not_to be_valid
+    end
+  end
+
   context 'when the valid email contains' do
     it 'should be email-formatted' do
       %w[user@example.com

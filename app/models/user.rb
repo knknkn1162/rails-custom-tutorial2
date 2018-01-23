@@ -8,6 +8,13 @@ class User < ApplicationRecord
     length: { maximum: 255 },
     format: { with: /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i },
     uniqueness: { case_sensitive: false }
+  validates :password,
+    presence: true,
+    length: { minimum: 6 }
+
+  # you can use password & password_confirmation attribute
+  # and authenticate method
+  has_secure_password
 
   private
 
