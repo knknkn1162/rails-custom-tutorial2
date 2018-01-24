@@ -19,12 +19,13 @@ RSpec.describe 'Users', type: :request do
     end
   end
 
-  describe 'POST /users' do
+  describe 'POST /users if success' do
     before(:each) do
       get signup_path
       post users_path, params: { user: attributes_for(:user) }
     end
-    it 'has redirect code if success' do
+
+    it 'has redirect status' do
       expect(response).to have_http_status(:redirect)
     end
 
@@ -39,6 +40,26 @@ RSpec.describe 'Users', type: :request do
       expect(
         [posted_user['name'], posted_user['email']]
       ).to eq [user['name'], user['email']]
+    end
+  end
+
+  describe 'POST /users if failure' do
+    before(:each) do
+      get signup_path
+      post users_path, params: { user: attributes_for(:user, name: ' ') }
+    end
+
+    it 'has success status' do
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'renders user/new template' do
+      expect(response).to render_template('users/new')
+    end
+
+    it 'assigns user with errors' do
+      user = assigns(:user)
+      expect(user.errors.any?).to be_truthy
     end
   end
 end
