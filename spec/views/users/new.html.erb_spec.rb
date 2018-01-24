@@ -12,5 +12,6 @@ RSpec.describe 'users/new.html.erb', type: :view do
   it 'renders form partial' do
     render
     expect(rendered).to render_template partial: 'users/_form'
+    expect(rendered).to render_template partial: 'shared/_error_messages'
   end
 end
