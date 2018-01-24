@@ -56,6 +56,7 @@ group :development, :test do
   gem 'simplecov'
   gem 'rspec_junit_formatter'
   gem 'shoulda-callback-matchers'
+  gem 'rails-controller-testing'
 end
 
 group :development do
