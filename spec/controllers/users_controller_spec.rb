@@ -26,4 +26,27 @@ RSpec.describe UsersController, type: :controller do
       expect(assigns(:user)).to eq user
     end
   end
+
+  describe 'POST #create' do
+    let(:user_attrs) { attributes_for(:user) }
+    it 'saves new user' do
+      expect {
+        post :create, params: { user: user_attrs }, session: {}
+      }.to change(User, :count).by(1)
+    end
+
+    it 'redirects the :create template if success' do
+      post :create, params: { user: user_attrs }, session: {}
+      user = User.last
+      expect(response).to redirect_to(user_path(user))
+    end
+
+    it 're-renders the :new template if failure' do
+      post :create, params: { user: attributes_for(:user, name: ' ') }
+      expect(response).to render_template('users/new')
+    end
+  end
+
+  describe "check private method" do
+  end
 end
