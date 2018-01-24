@@ -81,6 +81,10 @@ see `config/database.yml`!
 
 ## test
 
+Note) assume to use RSpec + Capybara + Factory_bot
+
++ mock .. rspec-mocks( https://github.com/rspec/rspec-mocks : very detailed explanation than docs from relish )
+
 ### gems
 
 + rails-controller-testing .. use capybara not only in features or views spec but also in controllers or views spec 
