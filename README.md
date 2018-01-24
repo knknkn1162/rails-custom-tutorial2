@@ -95,6 +95,10 @@ official document) http://www.rubydoc.info/github/jnicklas/capybara/Capybara
 
 ---
 
+### references
+
++ http://morizyun.github.io/ruby/ > rspec > controllers test, requests test
+
 ## production
 
 ### heroku
