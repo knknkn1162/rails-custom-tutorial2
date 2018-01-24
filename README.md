@@ -118,3 +118,25 @@ $ heroku run rails db:seed
 $ heroku restart
 $ heroku maintenance:off
 ```
+
++ Introduce SSL
+
+You can introduce SSL server easily in heroku!
+
+1. Edit `config/environments/production.rb` and `config/puma.rb`
+
+```ruby
+# config/environments/production.rb
+Rails.application.configure do
+  config.force_ssl = true
+end
+```
+
+(To configure `config/puma.rb`, see https://devcenter.heroku.com/articles/deploying-rails-applications-with-the-puma-web-server#config )
+
+2. set `./Procfile` as following. Be careful to set the file in top project file.
+
+```
+web: bundle exec puma -C config/puma.rb
+```
+
