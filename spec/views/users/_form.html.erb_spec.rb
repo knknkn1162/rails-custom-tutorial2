@@ -9,6 +9,7 @@ RSpec.describe "users/_form", type: :view do
     expect(rendered).to have_selector('input[type=password][name="user[password]"]')
     expect(rendered).to have_selector('input[type=password][name="user[password_confirmation]"]')
 
+    expect(rendered).to have_button(value: 'Create my account')
     expect(rendered).to have_button(count: 1)
   end
 end
