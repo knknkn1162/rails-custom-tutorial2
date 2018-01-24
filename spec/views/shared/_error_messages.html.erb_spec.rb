@@ -6,6 +6,7 @@ RSpec.describe 'shared/_error_messages', type: :view do
       user = User.create(attributes_for(:user))
       render partial: 'shared/error_messages', locals: { model: user }
 
+      expect(rendered).not_to have_selector('#error_explanation')
       expect(rendered).not_to have_selector('.alert-danger')
     end
   end
@@ -26,6 +27,7 @@ RSpec.describe 'shared/_error_messages', type: :view do
     end
 
     it 'contains alert-danger class' do
+      expect(rendered).to have_selector('#error_explanation')
       expect(rendered).to have_selector('.alert-danger')
     end
   end
@@ -57,6 +59,7 @@ RSpec.describe 'shared/_error_messages', type: :view do
     end
 
     it 'contains alert-danger class' do
+      expect(rendered).to have_selector('#error_explanation')
       expect(rendered).to have_selector('.alert-danger')
     end
   end

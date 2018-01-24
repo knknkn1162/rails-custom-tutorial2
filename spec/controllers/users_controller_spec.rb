@@ -47,6 +47,6 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe "check private method" do
+  describe 'check private method' do
   end
 end
