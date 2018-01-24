@@ -81,6 +81,20 @@ see `config/database.yml`!
 
 ## test
 
+### gems
+
++ rails-controller-testing .. use capybara not only in features or views spec but also in controllers or views spec 
+
+---
+
++ capybara
+
+official document) http://www.rubydoc.info/github/jnicklas/capybara/Capybara
+  + RSpecMatchers: http://www.rubydoc.info/github/jnicklas/capybara/Capybara/RSpecMatchers
+  + Capybara::Session: http://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session
+
+---
+
 ## production
 
 ### heroku
