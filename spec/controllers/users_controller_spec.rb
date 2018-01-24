@@ -38,12 +38,16 @@ RSpec.describe UsersController, type: :controller do
     it 'redirects the :create template if success' do
       post :create, params: { user: user_attrs }, session: {}
       user = User.last
+      # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
+      expect(response).to have_http_status(:redirect)
       expect(response).to redirect_to(user_path(user))
+      expect(flash[:success]).to be
     end
 
     it 're-renders the :new template if failure' do
       post :create, params: { user: attributes_for(:user, name: ' ') }
       expect(response).to render_template('users/new')
+      expect(flash).to be_empty
     end
   end
 
