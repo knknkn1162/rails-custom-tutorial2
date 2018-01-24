@@ -9,4 +9,13 @@ RSpec.describe "layouts/application", type: :view do
 
     expect(rendered).to have_title full_title(page_title)
   end
+
+  it 'displays single flash' do
+    test_sentence = 'This is a test'
+    flash[:test1] = test_sentence + '1'
+    flash[:test2] = test_sentence + '2'
+    render inline: '', layout: 'layouts/application'
+    expect(rendered).to have_selector 'div.alert-test1', text: test_sentence + '1'
+    expect(rendered).to have_selector 'div.alert-test2', text: test_sentence + '2'
+  end
 end
