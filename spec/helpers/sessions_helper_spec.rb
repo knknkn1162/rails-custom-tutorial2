@@ -11,5 +11,11 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe SessionsHelper, type: :helper do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'log_in test' do
+    it 'tests login' do
+      user = instance_double('User', id: 10)
+      helper.log_in(user)
+      expect(session[:user_id]).to eq 10
+    end
+  end
 end
