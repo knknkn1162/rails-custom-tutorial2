@@ -18,4 +18,15 @@ RSpec.describe SessionsHelper, type: :helper do
       expect(session[:user_id]).to eq 10
     end
   end
+
+  describe 'current_user test' do
+    it 'tests current_user' do
+      user = create(:user)
+      session[:user_id] = user.id
+      helper.current_user
+      # TODO: unavailable to use assigns method after adding `rails-controller-testing` gem
+      current_user = helper.instance_variable_get(:@current_user)
+      expect(current_user).to eq user
+    end
+  end
 end
