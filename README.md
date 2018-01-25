@@ -140,3 +140,8 @@ end
 web: bundle exec puma -C config/puma.rb
 ```
 
+# misc
+
+## Questions
+
++ when to test in feature spec?
