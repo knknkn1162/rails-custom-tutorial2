@@ -36,12 +36,34 @@ RSpec.describe SessionsController, type: :controller do
     end
   end
 
-  describe 'POST #create if failure' do
+  describe 'POST #create if email failure' do
     let(:login_invalid_user) do
       create(:user) do |user|
         post :create, params: { session: {
           email: 'dummy@password.com',
           password: user.password
+        } }
+      end
+    end
+
+    it 'renders the sessions/new template' do
+      login_invalid_user
+      expect(response).to have_http_status(:success)
+      expect(response).to render_template('sessions/new')
+    end
+
+    it 'flash danger' do
+      login_invalid_user
+      expect(flash[:danger]).to be
+    end
+  end
+
+  describe 'POST #create if password failure' do
+    let(:login_invalid_user) do
+      create(:user) do |user|
+        post :create, params: { session: {
+          email: user.email,
+          password: user.password + 'dummy'
         } }
       end
     end
