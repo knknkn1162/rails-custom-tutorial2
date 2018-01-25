@@ -37,6 +37,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'contains user_id in session' do
+        expect(session[:user_id]).not_to be
         user = post_user
         expect(session[:user_id]).to eq user.id
       end
