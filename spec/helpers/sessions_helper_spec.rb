@@ -29,4 +29,16 @@ RSpec.describe SessionsHelper, type: :helper do
       expect(current_user).to eq user
     end
   end
+
+  describe 'logged_in? test' do
+    it 'should be true when log_in' do
+      user = create(:user)
+      session[:user_id] = user.id
+      expect(helper.logged_in?).to be_truthy
+    end
+    it 'should be false when not log_in' do
+      session[:user_id] = -1
+      expect(helper.logged_in?).to be_falsy
+    end
+  end
 end
