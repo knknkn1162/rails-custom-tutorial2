@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include UsersHelper
+  attr_accessor :remember_token
   before_save :downcase_email
   validates :name,
     presence: true,
@@ -15,6 +17,12 @@ class User < ApplicationRecord
   # you can use password & password_confirmation attribute
   # and authenticate method
   has_secure_password
+
+  def remember
+    self.remember_token = generate_token
+    digest = generate_digest(remember_token)
+    update_attribute(:remember_digest, digest)
+  end
 
   private
 
