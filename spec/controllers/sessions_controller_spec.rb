@@ -87,17 +87,28 @@ RSpec.describe SessionsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let!(:user) { create(:user) }
+
+    let(:delete_user) do
+      delete :destroy, params: { id: user.id }
     end
 
-    it 'renders the sessions/new template' do
-      login_invalid_user
-      expect(response).to have_http_status(:success)
-      expect(response).to render_template('sessions/new')
+    it 'saves new user' do
+      expect { delete_user }.to change(User, :count).by(0)
     end
 
-    it 'flash danger' do
-      login_invalid_user
-      expect(flash[:danger]).to be
+    it 'returns http success' do
+      delete_user
+      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to('/')
+    end
+
+    it 'doesnt contains user_id in session' do
+      session[:user_id] = user.id
+      delete_user
+
+      expect(session[:user_id]).not_to be
     end
   end
 end
