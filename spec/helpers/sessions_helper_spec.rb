@@ -43,4 +43,20 @@ RSpec.describe SessionsHelper, type: :helper do
       expect(session).to be_empty
     end
   end
+
+  describe 'remember test' do
+    let(:user) { create(:user) }
+    before(:each) do
+      remember user
+    end
+    it 'contains remember_token & remember_digest' do
+      expect(user.remember_token).to be
+      expect(user.remember_digest).to be
+    end
+
+    it 'contains cookies' do
+      expect(cookies.signed[:user_id]).to be user.id
+      expect(cookies[:remember_token]).to be user.remember_token
+    end
+  end
 end
