@@ -29,19 +29,29 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'POST #create' do
     let(:user_attrs) { attributes_for(:user) }
-    it 'saves new user' do
-      expect {
-        post :create, params: { user: user_attrs }, session: {}
-      }.to change(User, :count).by(1)
+    let(:post_create) do
+      post :create, params: { user: user_attrs }, session: {}
     end
 
-    it 'redirects the :create template if success' do
-      post :create, params: { user: user_attrs }, session: {}
-      user = User.last
-      # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
-      expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to(user_path(user))
-      expect(flash[:success]).to be
+    describe 'redirects the :create template if success' do
+      it 'saves new user' do
+        expect do
+          post_create
+        end.to change(User, :count).by(1)
+      end
+
+      it 'should get redirect status and redirect to show page' do
+        post_create
+        user = User.last
+        # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to(user_path(user))
+      end
+
+      it 'should flash correctly' do
+        post_create
+        expect(flash[:success]).to be
+      end
     end
 
     it 're-renders the :new template if failure' do
