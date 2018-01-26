@@ -1,5 +1,11 @@
 # README 
 
+## Preface
+
+:loudspeaker: Make it a rule to refer primary sources, official documents!! 
+
++ http://api.rubyonrails.org/
+
 ## Preparation
 
 ### Gems
