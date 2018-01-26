@@ -20,8 +20,11 @@ class User < ApplicationRecord
 
   def remember
     self.remember_token = generate_token
-    digest = generate_digest(remember_token)
-    update_attribute(:remember_digest, digest)
+    update_attribute(:remember_digest, generate_digest(remember_token))
+  end
+
+  def authenticated?(remember_token)
+    remember_digest ? BCrypt::Password.new(remember_digest).is_password?(remember_token) : false
   end
 
   private
