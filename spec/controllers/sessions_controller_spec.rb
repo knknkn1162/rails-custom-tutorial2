@@ -36,10 +36,29 @@ RSpec.describe SessionsController, type: :controller do
         expect(flash).to be_empty
       end
 
-      it 'contains user_id in session' do
+      it 'contains user_id in session to confirm log_in method' do
         expect(session[:user_id]).not_to be
         user = post_user
         expect(session[:user_id]).to eq user.id
+      end
+
+      it 'should contains non-empty session and flash and cookies' do
+        post_user
+        user = assigns(:user)
+        expect(session).not_to be_empty
+        # Use response.cookies after the action to specify outcomes
+        # see also https://relishapp.com/rspec/rspec-rails/docs/controller-specs/cookies
+        expect(response.cookies['user_id']).to be
+        expect(response.cookies['remember_token']).to be
+        expect(flash).to be_empty
+      end
+
+      it 'should work remember method' do
+        post_user
+        assigned_user = assigns(:user)
+        expect(assigned_user.remember_token).to be
+        expect(assigned_user.remember_digest).to be
+        expect(assigned_user).to eq User.last
       end
     end
 
