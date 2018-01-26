@@ -103,6 +103,14 @@ RSpec.describe User, type: :model do
         expect(user.authenticated?(user.remember_token)).to be_truthy
       end
     end
+
+    describe 'when forget method' do
+      it 'clear remember_digest' do
+        user = build(:user, remember_digest: 'sample')
+        user.forget
+        expect(user.remember_digest).not_to be
+      end
+    end
   end
   context 'when private method calls' do
     it 'downcases email' do

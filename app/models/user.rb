@@ -27,6 +27,10 @@ class User < ApplicationRecord
     remember_digest ? BCrypt::Password.new(remember_digest).is_password?(remember_token) : false
   end
 
+  def forget
+    update_attribute(:remember_digest, nil)
+  end
+
   private
 
   def downcase_email
