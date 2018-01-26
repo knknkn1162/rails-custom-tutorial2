@@ -32,31 +32,24 @@ RSpec.describe SessionsHelper, type: :helper do
     end
   end
 
-  describe 'log_out test' do
-    it 'should work' do
-      user = create(:user)
-      session[:user_id] = user.id
-      helper.current_user
-      helper.log_out
-
-      expect(helper.instance_variable_get(:@current_user)).not_to be
-      expect(session).to be_empty
-    end
+  describe 'current_user' do
   end
 
-  describe 'remember test' do
-    let(:user) { create(:user) }
-    before(:each) do
-      remember user
-    end
-    it 'contains remember_token & remember_digest' do
-      expect(user.remember_token).to be
-      expect(user.remember_digest).to be
-    end
+  # describe 'log_out test' do
+    # it 'should work' do
+      # user = create(:user)
+      # helper.instance_variable_set(:@current_user, 'dummy')
+      # helper.log_out
 
-    it 'contains cookies' do
-      expect(cookies.signed[:user_id]).to be user.id
-      expect(cookies[:remember_token]).to be user.remember_token
-    end
-  end
+      # expect(helper.instance_variable_get(:@current_user)).not_to be
+    # end
+
+    # it 'delete session' do
+      # user = create(:user)
+      # session[:user_id] = -1
+      # helper.log_out
+
+      # expect(session).to be_empty
+    # end
+  # end
 end
