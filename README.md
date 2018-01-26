@@ -79,6 +79,14 @@ see `config/database.yml`!
 
 + to confirm data model not to change database, exec `rails console --sandbox`. Also the command, `rails db:console` enables direct connection to database. 
 
+### sessions, flash, cookies
+
++ sessions ... The way to write spec is the link below: http://morizyun.github.io/ruby/rspec-rails-controller.html.
+
++ flash
+
++ cookies( `ActionDispatch::Cookies` ) .. cookies should be used in controllers only. See also https://relishapp.com/rspec/rspec-rails/v/3-7/docs/controller-specs/cookies. (The link describes controllers spec via `request.cookies` or `response.cookies`)
+
 ## test
 
 Note) assume to use RSpec + Capybara + Factory_bot
@@ -98,6 +106,8 @@ official document) http://www.rubydoc.info/github/jnicklas/capybara/Capybara
   + Capybara::Session: http://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session
 
 ---
+
+### global
 
 ### references
 
