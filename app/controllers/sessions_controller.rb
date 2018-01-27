@@ -34,13 +34,13 @@ class SessionsController < ApplicationController
 
   # REVIEW: Doesn't this method have to be tested in spec/contorollers?
   def current_user
-    user_id = session[:user_id]
+    user_id = get_log_in_session
     if user_id
       get_user(user_id)
     else
       user = get_user(cookies.signed['user_id'])
       if user&.authorized?(remember_token)
-        log_in user
+        set_log_in_session user
         user
       end
     end

@@ -1,6 +1,10 @@
 module SessionsHelper
-  def log_in(user)
+  def set_log_in_session(user)
     session[:user_id] = user.id
+  end
+
+  def get_log_in_session
+    session[:user_id]
   end
 
   # TODO: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
