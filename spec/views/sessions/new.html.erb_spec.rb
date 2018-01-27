@@ -19,6 +19,10 @@ RSpec.describe "sessions/new.html.erb", type: :view do
       expect(rendered).to have_button(count: 1)
     end
 
+    it 'displays checkbox' do
+      expect(rendered).to have_unchecked_field
+    end
+
     it 'displays link' do
       expect(rendered).to have_link href: signup_path
     end

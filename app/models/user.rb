@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include UsersHelper
+  attr_accessor :remember_token
   before_save :downcase_email
   validates :name,
     presence: true,
@@ -15,6 +17,19 @@ class User < ApplicationRecord
   # you can use password & password_confirmation attribute
   # and authenticate method
   has_secure_password
+
+  def remember
+    self.remember_token = generate_token
+    update_attribute(:remember_digest, generate_digest(remember_token))
+  end
+
+  def authenticated?(remember_token)
+    remember_digest ? BCrypt::Password.new(remember_digest).is_password?(remember_token) : false
+  end
+
+  def forget
+    update_attribute(:remember_digest, nil)
+  end
 
   private
 

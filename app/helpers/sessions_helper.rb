@@ -1,18 +1,18 @@
 module SessionsHelper
-  def log_in(user)
+  def set_log_in_session(user)
     session[:user_id] = user.id
   end
 
-  def current_user
-    @current_user ||= User.find_by(id: session[:user_id])
+  def get_log_in_session
+    session[:user_id]
   end
 
-  def logged_in?
-    !current_user.nil?
-  end
-
-  def log_out
+  def forget_log_in_session
     session.delete(:user_id)
-    @current_user = nil
+  end
+
+  # TODO: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
+  def get_user(user_id)
+    User.find_by(id: user_id)
   end
 end

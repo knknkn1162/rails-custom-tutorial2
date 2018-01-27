@@ -75,6 +75,43 @@ RSpec.describe User, type: :model do
     end
   end
 
+  context 'when public method calls' do
+    include UsersHelper
+    it 'tests remember method' do
+      user = build(:user)
+      user.remember
+      expect(user.remember_token).to be
+      expect(BCrypt::Password.new(user.remember_digest)).to eq user.remember_token
+    end
+
+    describe 'tests authenticated? method' do
+      it 'fails when not remembered' do
+        user = build(:user)
+        expect(user.authenticated?(nil)).to be_falsy
+      end
+
+      it 'fails when puts invalid remember_token' do
+        user = build(:user)
+        user.remember
+        expect(user.authenticated?('')).to be_falsy
+      end
+
+      it 'succeed when remember_digest' do
+        user = build(:user)
+        user.remember
+
+        expect(user.authenticated?(user.remember_token)).to be_truthy
+      end
+    end
+
+    describe 'when forget method' do
+      it 'clear remember_digest' do
+        user = build(:user, remember_digest: 'sample')
+        user.forget
+        expect(user.remember_digest).not_to be
+      end
+    end
+  end
   context 'when private method calls' do
     it 'downcases email' do
       user = build(:user, email: 'Foo@ExAmPLe.COm')
