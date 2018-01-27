@@ -120,8 +120,6 @@ official document) http://www.rubydoc.info/github/jnicklas/capybara/Capybara
 
 ---
 
-### global
-
 ### references
 
 + http://morizyun.github.io/ruby/ > rspec > controllers test, requests test
