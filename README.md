@@ -6,6 +6,8 @@
 
 + http://api.rubyonrails.org/
 
++ http://www.rubydoc.info/gems/rack
+
 ## Preparation
 
 ### Gems
@@ -91,7 +93,8 @@ see `config/database.yml`!
 
 + flash
 
-+ cookies( `ActionDispatch::Cookies` ) .. cookies should be used in controllers only. See also https://relishapp.com/rspec/rspec-rails/v/3-7/docs/controller-specs/cookies. (The link describes controllers spec via `request.cookies` or `response.cookies`)
++ cookies( `ActionDispatch::Cookies` ) .. cookies should be used in controllers only. See also https://relishapp.com/rspec/rspec-rails/v/3-7/docs/controller-specs/cookies. (The link describes controllers spec via `request.cookies` or `response.cookies`) Controller.cookies derives from Request.cookie_jar()
+  + request.cookies .. http://www.rubydoc.info/gems/rack/Rack%2FRequest%2FHelpers:cookies (Rack provided)
 
 ## test
 
