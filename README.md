@@ -10,6 +10,8 @@
 
 + http://rspec.info/documentation/3.7/rspec-rails/
 
++ http://www.rubydoc.info/github/teamcapybara/capybara/master
+
 ## Preparation
 
 ### Gems
