@@ -1,4 +1,7 @@
 class SessionsController < ApplicationController
+  def new
+  end
+
   def create
     @user = User.find_by(email: params[:session][:email].downcase)
     if @user&.authenticate(params[:session][:password])
@@ -16,7 +19,30 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    log_out
+    user = current_user
+    if user
+      # clear remember_digest
+      user.forget
+      cookies.delete('user_id')
+      cookies.delete('remember_token')
+      session.delete(:user_id)
+    end
     redirect_to root_url
+  end
+
+  private
+
+  # REVIEW: Doesn't this method have to be tested in spec/contorollers?
+  def current_user
+    user_id = session[:user_id]
+    if user_id
+      get_user(user_id)
+    else
+      user = get_user(cookies.signed['user_id'])
+      if user&.authorized?(remember_token)
+        log_in user
+        user
+      end
+    end
   end
 end

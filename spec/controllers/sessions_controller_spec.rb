@@ -11,18 +11,18 @@ RSpec.describe SessionsController, type: :controller do
 
   describe 'POST #create' do
     describe 'if success' do
-      let(:post_user) {
+      let(:post_user) do
         create(:user) do |user|
           post :create, params: { session: {
             email: user.email,
             password: user.password
           } }
         end
-      }
+      end
       it 'saves new user' do
-        expect {
+        expect do
           post_user
-        }.to change(User, :count).by(1)
+        end.to change(User, :count).by(1)
       end
 
       it 'redirects the :create template if success' do
@@ -42,15 +42,24 @@ RSpec.describe SessionsController, type: :controller do
         expect(session[:user_id]).to eq user.id
       end
 
-      it 'should contains non-empty session and flash and cookies' do
+      it 'should contain non-empty flash' do
         post_user
-        user = assigns(:user)
-        expect(session).not_to be_empty
+        expect(flash).to be_empty
+      end
+
+      it 'should contain non-empty flash' do
+        user = post_user
+        assigned_user = assigns(:user)
+        # see https://stackoverflow.com/a/5482517/8774173
+        jar = request.cookie_jar
+        jar.signed[:user_id] = user.id
+
         # Use response.cookies after the action to specify outcomes
         # see also https://relishapp.com/rspec/rspec-rails/docs/controller-specs/cookies
-        expect(response.cookies['user_id']).to be
-        expect(response.cookies['remember_token']).to be
-        expect(flash).to be_empty
+        expect(response.cookies['user_id']).to eq jar[:user_id]
+        expect(
+          response.cookies['remember_token']
+        ).to eq assigned_user.remember_token
       end
 
       it 'should work remember method' do
