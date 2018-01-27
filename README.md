@@ -158,6 +158,12 @@ web: bundle exec puma -C config/puma.rb
 
 # misc
 
+## About Ruby
+
++ comment annotations .. https://github.com/bbatsov/ruby-style-guide#comment-annotations
+
 ## Questions
 
 + when to test in feature spec?
+
++ how to deal with cookies in Helper module? (rspec guide shows that cookies should be used only in contoller spec, but railstutorial use it in helper module:( )
