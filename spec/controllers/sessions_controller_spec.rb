@@ -123,7 +123,7 @@ RSpec.describe SessionsController, type: :controller do
       delete :destroy, params: { id: user.id }
     end
 
-    it 'saves new user' do
+    it 'doesnt change User.count' do
       expect { delete_user }.to change(User, :count).by(0)
     end
 
@@ -133,11 +133,25 @@ RSpec.describe SessionsController, type: :controller do
       expect(response).to redirect_to('/')
     end
 
-    it 'doesnt contains user_id in session' do
+    it 'forgets remember_digests' do
+      other = create(:other, remember_token: 'dummy')
+      session[:user_id] = other.id
+      delete :destroy, params: { id: other.id }
+      expect(other.remember_digest).not_to be
+    end
+
+    it 'deletes session' do
       session[:user_id] = user.id
       delete_user
-
       expect(session[:user_id]).not_to be
+    end
+
+    it 'deletes cookies' do
+      request.cookies['user_id'] = 10
+      request.cookies['remember_token'] = 'dummy'
+      delete_user
+      expect(response.cookies['user_id']).not_to be
+      expect(response.cookies['remember_token']).not_to be
     end
   end
 end
