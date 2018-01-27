@@ -15,7 +15,9 @@ RSpec.describe SessionsController, type: :controller do
         create(:user) do |user|
           post :create, params: { session: {
             email: user.email,
-            password: user.password
+            password: user.password,
+            # NOTE: checkedbox expresses '1', not true!
+            remember_me: '1'
           } }
         end
       end
@@ -47,13 +49,12 @@ RSpec.describe SessionsController, type: :controller do
         expect(flash).to be_empty
       end
 
-      it 'should contain non-empty flash' do
+      it 'should work contain non-empty cookies' do
         user = post_user
         assigned_user = assigns(:user)
         # see https://stackoverflow.com/a/5482517/8774173
         jar = request.cookie_jar
         jar.signed[:user_id] = user.id
-
         # Use response.cookies after the action to specify outcomes
         # see also https://relishapp.com/rspec/rspec-rails/docs/controller-specs/cookies
         expect(response.cookies['user_id']).to eq jar[:user_id]
@@ -62,12 +63,34 @@ RSpec.describe SessionsController, type: :controller do
         ).to eq assigned_user.remember_token
       end
 
-      it 'should work remember method' do
+      describe 'when checkbox is true' do
+        it 'contains remember_token, remember_digest attr and cookies' do
+          post_user
+          assigned_user = assigns(:user)
+          expect(assigned_user.remember_token).to be
+          expect(assigned_user.remember_digest).to be
+        end
+      end
+
+      describe 'when checkbox is false' do
+        it 'doesnt contains remember_token, remember_digest attr and cookies' do
+          create(:user) do |user|
+            post :create, params: { session: {
+              email: user.email,
+              password: user.password,
+              remember_me: '0'
+            } }
+          end
+          assigned_user = assigns(:user)
+          expect(assigned_user.remember_token).not_to be
+          expect(assigned_user.remember_digest).not_to be
+          expect(response.cookies).to be_empty
+        end
+      end
+
+      it 'assigns last user' do
         post_user
-        assigned_user = assigns(:user)
-        expect(assigned_user.remember_token).to be
-        expect(assigned_user.remember_digest).to be
-        expect(assigned_user).to eq User.last
+        expect(assigns(:user)).to eq User.last
       end
     end
 
