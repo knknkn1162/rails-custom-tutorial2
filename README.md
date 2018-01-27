@@ -8,6 +8,8 @@
 
 + http://www.rubydoc.info/gems/rack
 
++ http://rspec.info/documentation/3.7/rspec-rails/
+
 ## Preparation
 
 ### Gems
