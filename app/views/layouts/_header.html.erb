@@ -9,9 +9,13 @@
         <li>
           <%= link_to 'Help', help_path %>
         </li>
-        <li>
-          <%= link_to 'Log in', login_path %>
-        </li>
+        <% if logged_in? %>
+          <%= render 'layouts/dropdown' %>
+        <% else %>
+          <li>
+            <%= link_to 'Log in', login_path %>
+          </li>
+        <% end %>
       </ul>
     </nav>
   </div>
