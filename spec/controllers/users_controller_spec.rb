@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-
+  let(:logged_in_user_ok) {
+    controller.stub(:logged_in_user).and_return(true)
+  }
   describe 'GET #new' do
     before(:each) { get :new }
     it 'returns http success' do
@@ -73,6 +75,7 @@ RSpec.describe UsersController, type: :controller do
   describe 'GET #edit' do
     let(:user) { create(:user) }
     before(:each) do
+      logged_in_user_ok
       get :edit, params: { id: user.id }, session: {}
     end
 
@@ -88,6 +91,7 @@ RSpec.describe UsersController, type: :controller do
   describe 'PATCH #update' do
     let!(:user) { create(:user) }
     let(:post_create) do
+      logged_in_user_ok
       patch :update, params: { user: other_attrs, id: user.id }, session: {}
     end
 
