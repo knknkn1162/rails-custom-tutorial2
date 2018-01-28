@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let(:logged_in_user_ok) {
+  let(:logged_in_user_ok) do
     # NOTE: The expression `controller.stub(:current_user).and_return(user)` occurs `Deprecation Warnings:`.
     allow(controller).to receive(:logged_in_user).and_return(true)
-  }
+  end
+
   describe 'GET #new' do
     before(:each) { get :new }
     it 'returns http success' do
@@ -125,15 +126,20 @@ RSpec.describe UsersController, type: :controller do
       end
 
       describe 'when updated with empty password' do
-      it 'redirects to :show' do
-        other_attrs = attributes_for(:other, password: '', password_confirmation: '')
-        logged_in_user_ok
-        patch :update, params: { user: other_attrs, id: user.id }, session: {}
-        post_create
-        user = User.last
-        expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to("/users/#{user.id}")
-      end
+        let(:other_attrs) do
+          attributes_for(
+            :other,
+            password: '',
+            password_confirmation: ''
+          )
+        end
+
+        it 'redirects to :show' do
+          post_create
+          user = User.last
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to("/users/#{user.id}")
+        end
       end
     end
 
@@ -166,24 +172,32 @@ RSpec.describe UsersController, type: :controller do
       let(:user) { create(:user) }
       let(:login) { session[:user_id] = user.id }
 
+      let(:logged_in_true) do
+        allow(controller).to receive(:logged_in?).and_return(true)
+      end
+
+      let(:logged_in_false) do
+        allow(controller).to receive(:logged_in?).and_return(false)
+      end
+
       describe 'when #update' do
         let(:patch_update) { patch :update, params: { id: 0 }, session: {} }
 
-        it 'flash before #update if success login' do
-          controller.stub(:logged_in?).and_return(false)
+        it 'flash before #update if login fails' do
+          logged_in_false
           patch_update
           expect(flash[:danger]).to be
         end
 
-        it 'redirects login path if success login' do
-          controller.stub(:logged_in?).and_return(false)
+        it 'redirects login path if login fails' do
+          logged_in_false
           patch_update
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/login')
         end
 
-        it 'does nothing if login fails' do
-          controller.stub(:logged_in?).and_return(true)
+        it 'does nothing if login success' do
+          logged_in_true
           patch_update
           expect(flash).to be_empty
           expect(response).to have_http_status(:success)
@@ -193,20 +207,20 @@ RSpec.describe UsersController, type: :controller do
       describe 'when #edit' do
         let(:get_edit) { get :edit, params: { id: 0 }, session: {} }
         it 'flash before #update if success login' do
-          controller.stub(:logged_in?).and_return(false)
+          logged_in_false
           get_edit
           expect(flash[:danger]).to be
         end
 
-        it 'redirects login path if success login' do
-          controller.stub(:logged_in?).and_return(false)
+        it 'redirects login path if login fails' do
+          logged_in_false
           get_edit
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/login')
         end
 
-        it 'does nothing if login fails' do
-          controller.stub(:logged_in?).and_return(true)
+        it 'does nothing if login success' do
+          logged_in_true
           get_edit
           expect(flash).to be_empty
           expect(response).to have_http_status(:success)
