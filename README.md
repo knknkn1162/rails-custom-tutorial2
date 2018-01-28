@@ -1,6 +1,6 @@
-[![CircleCI](https://circleci.com/gh/knknkn1162/rails-custom-tutorial2.svg?style=shield)](https://circleci.com/gh/knknkn1162/rails-custom-tutorial2)
-
 # README 
+
+[![CircleCI](https://circleci.com/gh/knknkn1162/rails-custom-tutorial2.svg?style=shield)](https://circleci.com/gh/knknkn1162/rails-custom-tutorial2)
 
 ## Preface
 
