@@ -117,6 +117,11 @@ RSpec.describe UsersController, type: :controller do
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to("/users/#{user.id}")
       end
+
+      it 'flashes' do
+        post_create
+        expect(flash).not_to be_empty
+      end
     end
 
     describe 'when failure' do
