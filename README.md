@@ -169,6 +169,16 @@ web: bundle exec puma -C config/puma.rb
 
 ## Questions
 
-+ when to test in feature spec?
+Q. when to test in feature spec?
 
-+ how to deal with cookies in Helper module? (rspec guide shows that cookies should be used only in contoller spec, but railstutorial use it in helper module:( )
+---
+
+Q. how to deal with cookies in Helper module? (rspec guide shows that cookies should be used only in contoller spec, but railstutorial use it in helper module:( )
+
+---
+
+Q. What is the difference between yield and local variable in a partial?
+
+A. The yield keyword motivates us to use blocks, whereas local variable to deal with just variable. The expression `yield(:sub)` layouts by calling `content_for` method.  See also, http://api.rubyonrails.org/v5.1/classes/ActionView/Helpers/CaptureHelper.html#method-i-content_for
+
+---
