@@ -13,11 +13,11 @@ module UsersHelper
     SecureRandom.urlsafe_base64
   end
 
-  # TODO: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
   def get_user(user_id)
     User.find_by(id: user_id)
   end
 
+  # REVIEW: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
   def current_user
     user_id = get_log_in_session
     if user_id
@@ -31,6 +31,7 @@ module UsersHelper
     end
   end
 
+  # REVIEW: how to test the method dependent on current_user?
   def logged_in?
     !current_user.nil?
   end

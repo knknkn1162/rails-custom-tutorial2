@@ -23,12 +23,4 @@ RSpec.describe SessionsHelper, type: :helper do
       expect(session).to be_empty
     end
   end
-
-  describe 'get_user test' do
-    let(:user) { create(:user) }
-    it 'contains session' do
-      u = helper.get_user(user.id)
-      expect(u).to eq user
-    end
-  end
 end
