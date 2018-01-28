@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'users/_form', type: :view do
   before(:each) do
-    render partial: 'users/form', locals: { model: build(:user) }
+    render 'users/form', model: build(:user), button_text: 'Sample text'
   end
 
   it 'displays input' do
@@ -10,8 +10,10 @@ RSpec.describe 'users/_form', type: :view do
     expect(rendered).to have_selector('input[type=text][name="user[name]"]')
     expect(rendered).to have_selector('input[type=password][name="user[password]"]')
     expect(rendered).to have_selector('input[type=password][name="user[password_confirmation]"]')
+  end
 
-    expect(rendered).to have_button(value: 'Create my account')
+  it 'displays button' do
+    expect(rendered).to have_button(value: 'Sample text')
     expect(rendered).to have_button(count: 1)
   end
 
