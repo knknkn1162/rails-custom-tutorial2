@@ -73,7 +73,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       describe 'when checkbox is false' do
-        it 'doesnt contains remember_token, remember_digest attr and cookies' do
+        let(:post_create) do
           create(:user) do |user|
             post :create, params: { session: {
               email: user.email,
@@ -81,6 +81,9 @@ RSpec.describe SessionsController, type: :controller do
               remember_me: '0'
             } }
           end
+        end
+        it 'doesnt contains remember_token, remember_digest attr and cookies' do
+          post_create
           assigned_user = assigns(:user)
           expect(assigned_user.remember_token).not_to be
           expect(assigned_user.remember_digest).not_to be
