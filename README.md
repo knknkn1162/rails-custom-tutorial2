@@ -29,9 +29,26 @@ rails g rspec:install
 
 To install gems without production, exec `bundle install --without production`. With this option, the setting file `.bundle/config` is generated automatically.
 
+----
+
 + factory_bot_rails
 
 configure as the link, https://github.com/thoughtbot/factory_bot/blob/master/GETTING_STARTED.md#rspec.
+
+----
+
+
++ bootstrap-saas
+
+
+Be careful to add the following code in `app/assets/javascripts/application.js`:
+
+```javascript
+//= require jquery
+//= require bootstrap-sprockets
+```
+
+See also the link https://github.com/twbs/bootstrap-sass
 
 
 ### Database setting for development & test.
