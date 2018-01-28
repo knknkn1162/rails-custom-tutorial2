@@ -85,6 +85,52 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
+  describe 'PATCH #update' do
+    let!(:user) { create(:user) }
+    let(:post_create) do
+      patch :update, params: { user: other_attrs, id: user.id }, session: {}
+    end
+
+    describe 'when success' do
+      let!(:other_attrs) { attributes_for(:other) }
+      it 'saves updated users' do
+        expect do
+          post_create
+        end.to change(User, :count).by(0)
+      end
+
+      it 'updates users if success' do
+        post_create
+        user.reload
+
+        expect(user.name).to eq other_attrs[:name]
+        expect(user.email).to eq other_attrs[:email]
+      end
+
+      it 'redirects to :show' do
+        post_create
+        user = User.last
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to("/users/#{user.id}")
+      end
+    end
+
+    describe 'when failure' do
+      let!(:other_attrs) { attributes_for(:other, name: ' ') }
+      it 'saves updated users' do
+        expect do
+          post_create
+        end.to change(User, :count).by(0)
+      end
+
+      it 'redirects to :show' do
+        post_create
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template('users/edit')
+      end
+    end
+  end
+
   describe 'check private method' do
   end
 end
