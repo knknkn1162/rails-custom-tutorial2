@@ -54,10 +54,21 @@ RSpec.describe UsersController, type: :controller do
       end
     end
 
-    it 're-renders the :new template if failure' do
-      post :create, params: { user: attributes_for(:user, name: ' ') }
-      expect(response).to render_template('users/new')
-      expect(flash).to be_empty
+    describe 're-renders the :new template if failure' do
+      before(:each) do
+        post :create, params: { user: attributes_for(:user, name: ' ') }
+      end
+
+      it 'renders new page' do
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template('users/new')
+      end
+
+      it 'doesnt flash' do
+        expect(flash).to be_empty
+      end
+    end
+  end
 
   describe 'GET #edit' do
     let(:user) { create(:user) }
