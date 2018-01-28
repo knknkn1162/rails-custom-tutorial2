@@ -58,6 +58,19 @@ RSpec.describe UsersController, type: :controller do
       post :create, params: { user: attributes_for(:user, name: ' ') }
       expect(response).to render_template('users/new')
       expect(flash).to be_empty
+
+  describe 'GET #edit' do
+    let(:user) { create(:user) }
+    before(:each) do
+      get :edit, params: { id: user.id }, session: {}
+    end
+
+    it 'returns http success' do
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'assigns @user' do
+      expect(assigns(:user)).to eq user
     end
   end
 
