@@ -45,7 +45,7 @@ RSpec.describe UsersController, type: :controller do
         user = User.last
         # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
         expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to(user_path(user))
+        expect(response).to redirect_to("/users/#{user.id}")
       end
 
       it 'should flash correctly' do
