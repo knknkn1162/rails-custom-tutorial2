@@ -131,6 +131,65 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
-  describe 'check private method' do
+  describe 'check before_action method' do
+    describe 'when logged_in_user calls' do
+      controller do
+        def update
+        end
+
+        def edit
+        end
+      end
+
+      let(:user) { create(:user) }
+      let(:login) { session[:user_id] = user.id }
+
+      describe 'when #update' do
+        let(:patch_update) { patch :update, params: { id: 0 }, session: {} }
+
+        it 'flash before #update if success login' do
+          controller.stub(:logged_in?).and_return(false)
+          patch_update
+          expect(flash[:danger]).to be
+        end
+
+        it 'redirects login path if success login' do
+          controller.stub(:logged_in?).and_return(false)
+          patch_update
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+
+        it 'does nothing if login fails' do
+          controller.stub(:logged_in?).and_return(true)
+          patch_update
+          expect(flash).to be_empty
+          expect(response).to have_http_status(:success)
+        end
+      end
+
+      describe 'when #edit' do
+        let(:get_edit) { get :edit, params: { id: 0 }, session: {} }
+        it 'flash before #update if success login' do
+          controller.stub(:logged_in?).and_return(false)
+          get_edit
+          expect(flash[:danger]).to be
+        end
+
+        it 'redirects login path if success login' do
+          controller.stub(:logged_in?).and_return(false)
+          get_edit
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+
+        it 'does nothing if login fails' do
+          controller.stub(:logged_in?).and_return(true)
+          get_edit
+          expect(flash).to be_empty
+          expect(response).to have_http_status(:success)
+        end
+      end
+    end
   end
 end
