@@ -7,7 +7,7 @@ FactoryBot.define do
 
     # TODO: confirm the right way to generate fixtures
     factory :other do
-      name 'other_name'
+      sequence(:name) { |n| "other_name-#{n}" }
       sequence(:email) { |n| "example_#{n}@gmail.com" }
     end
   end
