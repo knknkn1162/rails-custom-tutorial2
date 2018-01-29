@@ -1,9 +1,16 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
+  let(:user) { create(:user) }
+  let(:other) { create(:other) }
+
   let(:logged_in_user_ok) do
     # NOTE: The expression `controller.stub(:current_user).and_return(user)` occurs `Deprecation Warnings:`.
     allow(controller).to receive(:logged_in_user).and_return(true)
+  end
+
+  let(:correct_user_ok) do
+    allow(controller).to receive(:correct_user).and_return(true)
   end
 
   describe 'GET #new' do
@@ -18,7 +25,6 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'GET #show' do
-    let(:user) { create(:user) }
     before {
       get :show, params: { id: user.id }, session: {}
     }
@@ -75,9 +81,9 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'GET #edit' do
-    let(:user) { create(:user) }
     before(:each) do
       logged_in_user_ok
+      correct_user_ok
       get :edit, params: { id: user.id }, session: {}
     end
 
@@ -94,6 +100,7 @@ RSpec.describe UsersController, type: :controller do
     let!(:user) { create(:user) }
     let(:post_create) do
       logged_in_user_ok
+      correct_user_ok
       patch :update, params: { user: other_attrs, id: user.id }, session: {}
     end
 
@@ -159,26 +166,37 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
+  # REVIEW: Should the method under before_filter be tested a lot?
   describe 'check before_action method' do
+    controller do
+      def update
+      end
+
+      def edit
+      end
+    end
+
+    let(:logged_in_true) do
+      allow(controller).to receive(:logged_in?).and_return(true)
+    end
+
+    let(:logged_in_false) do
+      allow(controller).to receive(:logged_in?).and_return(false)
+    end
+
+
+    let(:current_my_user) {
+      allow(controller).to receive(:current_user).and_return(user)
+    }
+
+    let(:current_other_user) {
+      allow(controller).to receive(:current_user).and_return(other)
+    }
+
     describe 'when logged_in_user calls' do
-      controller do
-        def update
-        end
-
-        def edit
-        end
-      end
-
-      let(:user) { create(:user) }
-      let(:login) { session[:user_id] = user.id }
-
-      let(:logged_in_true) do
-        allow(controller).to receive(:logged_in?).and_return(true)
-      end
-
-      let(:logged_in_false) do
-        allow(controller).to receive(:logged_in?).and_return(false)
-      end
+      before(:each) {
+        correct_user_ok
+      }
 
       describe 'when #update' do
         let(:patch_update) { patch :update, params: { id: 0 }, session: {} }
@@ -222,6 +240,48 @@ RSpec.describe UsersController, type: :controller do
         it 'does nothing if login success' do
           logged_in_true
           get_edit
+          expect(flash).to be_empty
+          expect(response).to have_http_status(:success)
+        end
+      end
+    end
+
+    describe 'when correct_user called' do
+      describe 'when #edit' do
+        let(:get_edit) { get :edit, params: { id: user.id }, session: {} }
+
+        it 'redirects root path if current_user is other' do
+          current_other_user
+          get_edit
+
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/')
+        end
+
+
+        it 'successes if current_user is user' do
+          current_my_user
+          get_edit
+
+          expect(response).to have_http_status(:success)
+        end
+      end
+
+      describe 'when #update' do
+        let(:patch_update) do
+          patch :update, params: { id: user.id }, session: {}
+        end
+
+        it 'redirects root path if current_user is other' do
+          current_other_user
+          patch_update
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/')
+        end
+
+        it 'does nothing if login success' do
+          current_my_user
+          patch_update
           expect(flash).to be_empty
           expect(response).to have_http_status(:success)
         end
