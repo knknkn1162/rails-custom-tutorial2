@@ -36,6 +36,8 @@ class UsersController < ApplicationController
 
   private
 
+  # REVIEW: Is there any way to test the method directly?
+  # currently, cope with Anonymous controller via before_action.
   def logged_in_user
     unless logged_in?
       flash[:danger] = 'Please log in.'
