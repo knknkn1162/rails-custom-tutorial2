@@ -219,9 +219,31 @@ RSpec.describe UsersController, type: :controller do
     }
 
     describe 'when logged_in_user calls' do
-      before(:each) {
+      before(:each) do
         correct_user_ok
-      }
+      end
+
+      describe 'when index' do
+        let(:get_index) { get :index, params: {}, session: {} }
+        it 'flash before #update if login fails' do
+          logged_in_false
+          get_index
+          expect(flash[:danger]).to be
+        end
+
+        it 'stored forwarding_url in session' do
+          allow(controller).to receive(:logged_in?).and_return(false)
+          get_index
+          expect(session[:forwarding_url]).to eq users_url
+        end
+
+        it 'redirects login path if login fails' do
+          logged_in_false
+          get_index
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+      end
 
       describe 'when #update' do
         let(:patch_update) { patch :update, params: { id: 0 }, session: {} }
