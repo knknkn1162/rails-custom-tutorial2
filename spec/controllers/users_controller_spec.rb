@@ -207,6 +207,12 @@ RSpec.describe UsersController, type: :controller do
           expect(flash[:danger]).to be
         end
 
+        it 'stored forwarding_url in session' do
+          allow(controller).to receive(:logged_in?).and_return(false)
+          patch_update
+          expect(session[:forwarding_url]).to eq user_url(build(:user, id: 0))
+        end
+
         it 'redirects login path if login fails' do
           logged_in_false
           patch_update

@@ -41,6 +41,7 @@ class UsersController < ApplicationController
   # currently, cope with Anonymous controller via before_action.
   def logged_in_user
     unless logged_in?
+      store_location(request.original_url)
       flash[:danger] = 'Please log in.'
       redirect_to login_url
     end
