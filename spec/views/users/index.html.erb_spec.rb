@@ -23,7 +23,7 @@ RSpec.describe 'users/index', type: :view do
   end
 
   describe 'users/_user', type: :view do
-    it 'renders list of 31 users' do
+    it 'renders list of 20, users' do
       render
       expect(rendered).to have_selector('ul.users li', count: 20)
       expect(rendered).to have_selector('ul.users a', count: 20)
