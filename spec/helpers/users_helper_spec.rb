@@ -17,4 +17,17 @@ RSpec.describe UsersHelper, type: :helper do
       expect(u).to eq user
     end
   end
+
+  describe 'current_user? test' do
+    let(:current_my_user) do
+      expect(helper).to receive(:current_user).and_return(user)
+    end
+
+    let(:user) { create(:user) }
+
+    it 'is true' do
+      current_my_user
+      expect(helper.current_user?(user)).to be_truthy
+    end
+  end
 end
