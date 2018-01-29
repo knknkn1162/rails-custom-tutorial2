@@ -13,6 +13,28 @@ RSpec.describe UsersController, type: :controller do
     allow(controller).to receive(:correct_user).and_return(true)
   end
 
+  describe 'when #index' do
+    let!(:users) do
+      create_list(:other, 5)
+    end
+    before(:each) do
+      logged_in_user_ok
+      get :index, params: {}, session: {}
+    end
+
+    it 'has a 200 status code' do
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'assigns @users' do
+      expect(assigns(:users)).to match_array users
+    end
+
+    it 'renders the :index template' do
+      expect(response).to render_template(:index)
+    end
+  end
+
   describe 'GET #new' do
     before(:each) { get :new }
     it 'returns http success' do
@@ -173,6 +195,9 @@ RSpec.describe UsersController, type: :controller do
       end
 
       def edit
+      end
+
+      def index
       end
     end
 
