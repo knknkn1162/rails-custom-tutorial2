@@ -23,12 +23,10 @@ RSpec.describe 'users/index', type: :view do
   end
 
   describe 'users/_user', type: :view do
-    describe 'when will_paginate turns on' do
-      it 'renders list of 31 users' do
-        render
-        expect(rendered).to have_selector('ul.users li', count: 20)
-        expect(rendered).to have_selector('ul.users a', count: 20)
-      end
+    it 'renders list of 31 users' do
+      render
+      expect(rendered).to have_selector('ul.users li', count: 20)
+      expect(rendered).to have_selector('ul.users a', count: 20)
     end
   end
 end
