@@ -33,6 +33,15 @@ RSpec.describe SessionsController, type: :controller do
         expect(response).to redirect_to("/users/#{user.id}")
       end
 
+      it 'redirects the :other template if forwarding_url is stored in session' do
+        session[:forwarding_url] = root_url
+        post_user
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+
+        expect(session[:forwarding_url]).not_to be
+      end
+
       it 'doesnt flash' do
         post_user
         expect(flash).to be_empty
