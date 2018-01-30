@@ -39,11 +39,27 @@ RSpec.feature 'Users', type: :feature do
       expect(page).to have_selector 'div.pagination'
       expect(page).to have_selector "li.active a[href='/users?page=#{current_page}']"
       expect(page).to have_selector 'ul.users li', count: 30
+    end
 
+    scenario 'renders each users' do
       first_page_of_users.each do |user|
-        expect(page).to have_selector("a[href='/users/#{user.id}']", text: user.name)
-        unless user.admin?
-          expect(page).to have_selector("a[href='/users/#{user.id}']", text: 'delete')
+        expect(page).to have_selector(
+          "a[href='/users/#{user.id}']", text: user.name
+        )
+      end
+    end
+
+    scenario 'delete the user via link' do
+      first_page_of_users.each do |user|
+        user_href = "/users/#{user.id}"
+        user_tag = "a[href='#{user_href}']"
+        if user.admin?
+          expect(page).not_to have_selector(user_tag, text: 'delete')
+        else
+          expect(page).to have_selector(user_tag, text: 'delete')
+          click_link 'delete', href: user_href
+          # confirm destroy action
+          expect(page).not_to have_selector(user_tag, text: 'delete')
         end
       end
     end
