@@ -110,7 +110,7 @@ see `config/database.yml`!
 
 + to confirm data model not to change database, exec `rails console --sandbox`. Also the command, `rails db:console` enables direct connection to database. 
 
-### sessions, flash, cookies
+### methods, variables
 
 + sessions ... The way to write spec is the link below: http://morizyun.github.io/ruby/rspec-rails-controller.html.
 
@@ -124,6 +124,10 @@ see `config/database.yml`!
 Note) assume to use RSpec + Capybara + Factory_bot
 
 + mock .. rspec-mocks( https://github.com/rspec/rspec-mocks : very detailed explanation than docs from relish )
+
+## methods, variables
+
++ page .. The method that returns `Capybara::Session`. See http://www.rubydoc.info/github/teamcapybara/capybara/master/Capybara/DSL#page-instance_method
 
 ### gems
 
