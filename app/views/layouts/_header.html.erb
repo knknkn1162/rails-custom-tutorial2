@@ -10,7 +10,7 @@
           <%= link_to 'Help', help_path %>
         </li>
         <% if logged_in? %>
-          <%= render 'dropdown', user: current_user %>
+          <%= render 'layouts/dropdown', user: current_user %>
         <% else %>
           <li>
             <%= link_to 'Log in', login_path %>
