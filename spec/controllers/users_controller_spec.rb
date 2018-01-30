@@ -145,6 +145,24 @@ RSpec.describe UsersController, type: :controller do
       patch :update, params: { user: other_attrs, id: user.id }, session: {}
     end
 
+    describe 'when security check' do
+      let(:patch_update) do
+        patch :update, params: { id: user }
+      end
+      it 'should not allow the admin attr to be edited' do
+        # forced to change admin user with patch update
+        patch :update,
+          params: {
+            user: {
+              admin: true
+            },
+            id: other.id
+          },
+          session: {}
+        expect(other.reload.admin?).to be_falsy
+      end
+    end
+
     describe 'when success' do
       let!(:other_attrs) { attributes_for(:other) }
       it 'saves updated users' do
@@ -329,7 +347,6 @@ RSpec.describe UsersController, type: :controller do
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/')
         end
-
 
         it 'successes if current_user is user' do
           current_my_user
