@@ -13,6 +13,10 @@ RSpec.describe UsersController, type: :controller do
     allow(controller).to receive(:correct_user).and_return(true)
   end
 
+  let(:admin_user_ok) do
+    allow(controller).to receive(:admin_user).and_return(true)
+  end
+
   describe 'when #index' do
     describe 'when pagination doesnt exist' do
       let!(:users) do
@@ -233,6 +237,7 @@ RSpec.describe UsersController, type: :controller do
 
     before(:each) do
       logged_in_user_ok
+      admin_user_ok
     end
     it 'delete the user' do
       expect do
@@ -281,6 +286,7 @@ RSpec.describe UsersController, type: :controller do
       before(:each) do
         stubbed_logged_in?
         correct_user_ok
+        admin_user_ok
         action
       end
 
@@ -348,12 +354,13 @@ RSpec.describe UsersController, type: :controller do
       end
     end
 
-    describe 'when correct_user called' do
+    describe 'when correct_user calls' do
       # assume that current_user is differnt from user with params[:id]
       let!(:current_user_flag) { other }
       before(:each) do
         stubbed_current_user
         logged_in_user_ok
+        admin_user_ok
         action
       end
 
@@ -367,6 +374,24 @@ RSpec.describe UsersController, type: :controller do
 
       describe 'when #update' do
         let(:action) { patch :update, params: { id: user.id }, session: {} }
+        it 'redirects root path if current_user is other' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/')
+        end
+      end
+    end
+
+    describe 'when admin_user calls' do
+      let!(:current_user_flag) { other }
+      before(:each) do
+        stubbed_current_user
+        logged_in_user_ok
+        correct_user_ok
+        action
+      end
+
+      describe 'when #destroy' do
+        let(:action) { delete :destroy, params: { id: 0 }, session: {} }
         it 'redirects root path if current_user is other' do
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/')
