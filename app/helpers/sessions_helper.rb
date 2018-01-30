@@ -11,8 +11,15 @@ module SessionsHelper
     session.delete(:user_id)
   end
 
-  # TODO: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
-  def get_user(user_id)
-    User.find_by(id: user_id)
+  def store_location(url)
+    session[:forwarding_url] = url
+  end
+
+  def get_location
+    session[:forwarding_url]
+  end
+
+  def delete_location
+    session.delete(:forwarding_url)
   end
 end

@@ -12,4 +12,31 @@ module UsersHelper
   def generate_token
     SecureRandom.urlsafe_base64
   end
+
+  def get_user(user_id)
+    User.find_by(id: user_id)
+  end
+
+  # REVIEW: how to deal with cookies? Should not be contains any method in helper module due to rspec test?
+  def current_user
+    user_id = get_log_in_session
+    if user_id
+      get_user(user_id)
+    else
+      user = get_user(cookies.signed['user_id'])
+      if user&.authorized?(remember_token)
+        set_log_in_session user
+        user
+      end
+    end
+  end
+
+  def current_user?(user)
+    user == current_user
+  end
+
+  # REVIEW: how to test the method dependent on current_user?
+  def logged_in?
+    !current_user.nil?
+  end
 end

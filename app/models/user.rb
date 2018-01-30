@@ -12,7 +12,8 @@ class User < ApplicationRecord
     uniqueness: { case_sensitive: false }
   validates :password,
     presence: true,
-    length: { minimum: 6 }
+    length: { minimum: 6 },
+    allow_nil: true
 
   # you can use password & password_confirmation attribute
   # and authenticate method
@@ -36,4 +37,5 @@ class User < ApplicationRecord
   def downcase_email
     email.downcase!
   end
+
 end

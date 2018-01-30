@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  include UsersHelper
+
   def new
   end
 
@@ -7,7 +9,9 @@ class SessionsController < ApplicationController
     if @user&.authenticate(params[:session][:password])
       set_log_in_session @user
       params[:session][:remember_me] == '1' ? remember : forget
-      redirect_to @user
+      # friendly forwarding
+      redirect_to(get_location || @user)
+      delete_location
     else
       flash.now[:danger] = 'Invalid email/password combination'
       render 'new'
@@ -22,19 +26,6 @@ class SessionsController < ApplicationController
 
   # REVIEW: Doesn't this method have to be tested in spec/contorollers?
   private
-
-  def current_user
-    user_id = get_log_in_session
-    if user_id
-      get_user(user_id)
-    else
-      user = get_user(cookies.signed['user_id'])
-      if user&.authorized?(remember_token)
-        set_log_in_session user
-        user
-      end
-    end
-  end
 
   def remember
     @user.remember

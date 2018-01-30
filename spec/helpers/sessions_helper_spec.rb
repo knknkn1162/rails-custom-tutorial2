@@ -24,11 +24,25 @@ RSpec.describe SessionsHelper, type: :helper do
     end
   end
 
-  describe 'get_user test' do
-    let(:user) { create(:user) }
-    it 'contains session' do
-      u = helper.get_user(user.id)
-      expect(u).to eq user
+  describe 'store_location test' do
+    it 'succeeds' do
+      store_location('/dummy')
+      expect(session[:forwarding_url]).to eq '/dummy'
+    end
+  end
+
+  describe 'get_location test' do
+    it 'succeeds' do
+      session[:forwarding_url] = 'dummy'
+      expect(get_location).to eq 'dummy'
+    end
+  end
+
+  describe 'delete_location test' do
+    it 'succeeds' do
+      session[:forwarding_url] = 'dummy'
+      delete_location
+      expect(session).to be_empty
     end
   end
 end
