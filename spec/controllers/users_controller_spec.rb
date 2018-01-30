@@ -17,13 +17,19 @@ RSpec.describe UsersController, type: :controller do
     allow(controller).to receive(:admin_user).and_return(true)
   end
 
+  let(:ignore_before_action) do
+    logged_in_user_ok
+    correct_user_ok
+    admin_user_ok
+  end
+
   describe 'when #index' do
     describe 'when pagination doesnt exist' do
       let!(:users) do
         create_list(:other, 5)
       end
       before(:each) do
-        logged_in_user_ok
+        ignore_before_action
         get :index, params: {}, session: {}
       end
 
@@ -46,7 +52,7 @@ RSpec.describe UsersController, type: :controller do
       end
 
       before(:each) do
-        logged_in_user_ok
+        ignore_before_action
         get :index, params: { page: 1 }, session: {}
       end
 
@@ -59,7 +65,10 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'GET #new' do
-    before(:each) { get :new }
+    before(:each) do
+      get :new
+    end
+
     it 'returns http success' do
       expect(response).to have_http_status(:success)
     end
@@ -70,9 +79,11 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'GET #show' do
-    before {
+    before do
+      ignore_before_action
       get :show, params: { id: user.id }, session: {}
-    }
+    end
+
     it 'returns http success' do
       expect(response).to have_http_status(:success)
     end
@@ -84,6 +95,10 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'POST #create' do
     let(:user_attrs) { attributes_for(:user) }
+    before(:each) do
+      ignore_before_action
+    end
+
     let(:post_create) do
       post :create, params: { user: user_attrs }, session: {}
     end
@@ -110,11 +125,12 @@ RSpec.describe UsersController, type: :controller do
     end
 
     describe 're-renders the :new template if failure' do
-      before(:each) do
+      let(:post_create) do
         post :create, params: { user: attributes_for(:user, name: ' ') }
       end
 
       it 'renders new page' do
+        post_create
         expect(response).to have_http_status(:success)
         expect(response).to render_template('users/new')
       end
@@ -127,8 +143,7 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'GET #edit' do
     before(:each) do
-      logged_in_user_ok
-      correct_user_ok
+      ignore_before_action
       get :edit, params: { id: user.id }, session: {}
     end
 
@@ -143,16 +158,15 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'PATCH #update' do
     let!(:user) { create(:user) }
+    before(:each) do
+      ignore_before_action
+    end
+
     let(:post_create) do
-      logged_in_user_ok
-      correct_user_ok
       patch :update, params: { user: other_attrs, id: user.id }, session: {}
     end
 
     describe 'when security check' do
-      let(:patch_update) do
-        patch :update, params: { id: user }
-      end
       it 'should not allow the admin attr to be edited' do
         # forced to change admin user with patch update
         patch :update,
@@ -230,15 +244,15 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'when #destroy' do
+    before(:each) do
+      ignore_before_action
+    end
+
     let!(:user) { create(:user) }
     let(:delete_destroy) do
       delete :destroy, params: { id: user.id }, session: {}
     end
 
-    before(:each) do
-      logged_in_user_ok
-      admin_user_ok
-    end
     it 'delete the user' do
       expect do
         delete_destroy
