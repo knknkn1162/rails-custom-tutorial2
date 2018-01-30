@@ -14,24 +14,43 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'when #index' do
-    let!(:users) do
-      create_list(:other, 5)
-    end
-    before(:each) do
-      logged_in_user_ok
-      get :index, params: {}, session: {}
+    describe 'when pagination doesnt exist' do
+      let!(:users) do
+        create_list(:other, 5)
+      end
+      before(:each) do
+        logged_in_user_ok
+        get :index, params: {}, session: {}
+      end
+
+      it 'has a 200 status code' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'assigns @users' do
+        expect(assigns(:users)).to eq users
+      end
+
+      it 'renders the :index template' do
+        expect(response).to render_template(:index)
+      end
     end
 
-    it 'has a 200 status code' do
-      expect(response).to have_http_status(:success)
-    end
+    describe 'when pagination exists' do
+      let!(:users) do
+        create_list(:other, 31)
+      end
 
-    it 'assigns @users' do
-      expect(assigns(:users)).to match_array users
-    end
+      before(:each) do
+        logged_in_user_ok
+        get :index, params: { page: 1 }, session: {}
+      end
 
-    it 'renders the :index template' do
-      expect(response).to render_template(:index)
+      it 'lists list of @users' do
+        assigned_users = assigns(:users)
+        expect(assigned_users.size).to eq 30
+        expect(assigned_users).to eq users[0..29]
+      end
     end
   end
 
