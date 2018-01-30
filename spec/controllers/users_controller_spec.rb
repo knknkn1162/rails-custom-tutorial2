@@ -225,6 +225,33 @@ RSpec.describe UsersController, type: :controller do
     end
   end
 
+  describe 'when #destroy' do
+    let!(:user) { create(:user) }
+    let(:delete_destroy) do
+      delete :destroy, params: { id: user.id }, session: {}
+    end
+
+    before(:each) do
+      logged_in_user_ok
+    end
+    it 'delete the user' do
+      expect do
+        delete_destroy
+      end.to change(User, :count).by(-1)
+    end
+
+    it 'redirects the :show template' do
+      delete_destroy
+      expect(response).to have_http_status(:redirect)
+      expect(response).to redirect_to('/users')
+    end
+
+    it 'flashes' do
+      delete_destroy
+      expect(flash).not_to be_empty
+    end
+  end
+
   # REVIEW: Should the method under before_filter be tested a lot?
   describe 'check before_action method' do
     controller do
