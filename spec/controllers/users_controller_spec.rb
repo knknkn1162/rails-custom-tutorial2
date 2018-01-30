@@ -236,143 +236,113 @@ RSpec.describe UsersController, type: :controller do
 
       def index
       end
+
+      def destroy
+      end
     end
 
-    let(:logged_in_true) do
-      allow(controller).to receive(:logged_in?).and_return(true)
+    let(:stubbed_logged_in?) do
+      allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
     end
 
-    let(:logged_in_false) do
-      allow(controller).to receive(:logged_in?).and_return(false)
+    let(:stubbed_current_user) do
+      allow(controller).to receive(:current_user).and_return(current_user_flag)
     end
-
-
-    let(:current_my_user) {
-      allow(controller).to receive(:current_user).and_return(user)
-    }
-
-    let(:current_other_user) {
-      allow(controller).to receive(:current_user).and_return(other)
-    }
 
     describe 'when logged_in_user calls' do
+      let!(:logged_in_flag) { false }
       before(:each) do
+        stubbed_logged_in?
         correct_user_ok
+        action
       end
 
-      describe 'when index' do
-        let(:get_index) { get :index, params: {}, session: {} }
+      describe 'when #destroy' do
+        let(:action) do
+          delete :destroy, params: { id: user.id }, session: {}
+        end
         it 'flash before #update if login fails' do
-          logged_in_false
-          get_index
           expect(flash[:danger]).to be
         end
 
         it 'stored forwarding_url in session' do
-          allow(controller).to receive(:logged_in?).and_return(false)
-          get_index
+          expect(session[:forwarding_url]).to eq user_url(user)
+        end
+
+        it 'redirects login path if login fails' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+      end
+
+      describe 'when #index' do
+        let(:action) { get :index, params: {}, session: {} }
+        it 'flash before #update if login fails' do
+          expect(flash[:danger]).to be
+        end
+
+        it 'stored forwarding_url in session' do
           expect(session[:forwarding_url]).to eq users_url
         end
 
         it 'redirects login path if login fails' do
-          logged_in_false
-          get_index
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/login')
         end
       end
 
       describe 'when #update' do
-        let(:patch_update) { patch :update, params: { id: 0 }, session: {} }
+        let(:action) { patch :update, params: { id: 0 }, session: {} }
 
         it 'flash before #update if login fails' do
-          logged_in_false
-          patch_update
           expect(flash[:danger]).to be
         end
 
         it 'stored forwarding_url in session' do
-          allow(controller).to receive(:logged_in?).and_return(false)
-          patch_update
           expect(session[:forwarding_url]).to eq user_url(build(:user, id: 0))
         end
 
         it 'redirects login path if login fails' do
-          logged_in_false
-          patch_update
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/login')
-        end
-
-        it 'does nothing if login success' do
-          logged_in_true
-          patch_update
-          expect(flash).to be_empty
-          expect(response).to have_http_status(:success)
         end
       end
 
       describe 'when #edit' do
-        let(:get_edit) { get :edit, params: { id: 0 }, session: {} }
+        let(:action) { get :edit, params: { id: 0 }, session: {} }
         it 'flash before #update if success login' do
-          logged_in_false
-          get_edit
           expect(flash[:danger]).to be
         end
 
         it 'redirects login path if login fails' do
-          logged_in_false
-          get_edit
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/login')
-        end
-
-        it 'does nothing if login success' do
-          logged_in_true
-          get_edit
-          expect(flash).to be_empty
-          expect(response).to have_http_status(:success)
         end
       end
     end
 
     describe 'when correct_user called' do
+      # assume that current_user is differnt from user with params[:id]
+      let!(:current_user_flag) { other }
+      before(:each) do
+        stubbed_current_user
+        logged_in_user_ok
+        action
+      end
+
       describe 'when #edit' do
-        let(:get_edit) { get :edit, params: { id: user.id }, session: {} }
-
+        let(:action) { get :edit, params: { id: user.id }, session: {} }
         it 'redirects root path if current_user is other' do
-          current_other_user
-          get_edit
-
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/')
-        end
-
-        it 'successes if current_user is user' do
-          current_my_user
-          get_edit
-
-          expect(response).to have_http_status(:success)
         end
       end
 
       describe 'when #update' do
-        let(:patch_update) do
-          patch :update, params: { id: user.id }, session: {}
-        end
-
+        let(:action) { patch :update, params: { id: user.id }, session: {} }
         it 'redirects root path if current_user is other' do
-          current_other_user
-          patch_update
           expect(response).to have_http_status(:redirect)
           expect(response).to redirect_to('/')
-        end
-
-        it 'does nothing if login success' do
-          current_my_user
-          patch_update
-          expect(flash).to be_empty
-          expect(response).to have_http_status(:success)
         end
       end
     end
