@@ -3,6 +3,8 @@ require 'rails_helper'
 RSpec.describe 'users/_user', type: :view do
   let(:user) { create(:user) }
   let(:other) { create(:other) }
+  # current_user? and admin_current_user? depends on helper.current_user method
+  # The method chain expression seems to be invalid!
   let(:stubbed_current_user) do
     allow(view).to receive(:current_user).and_return(current_user_flag)
   end
