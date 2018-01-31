@@ -84,20 +84,14 @@ RSpec.describe User, type: :model do
     context 'tests authenticated? method' do
       it 'fails when not remembered' do
         user = build(:user)
-        expect(user.authenticated?(nil)).to be_falsy
+        expect(user.authenticated?(:remember, nil)).to be_falsy
       end
 
-      it 'fails when puts invalid remember_token' do
+      it 'successes when puts invalid remember_token' do
         user = build(:user)
-        user.remember
-        expect(user.authenticated?('')).to be_falsy
-      end
-
-      it 'succeed when remember_digest' do
-        user = build(:user)
-        user.remember
-
-        expect(user.authenticated?(user.remember_token)).to be_truthy
+        user.remember_token = 'sample'
+        user.remember_digest = generate_digest('sample')
+        expect(user.authenticated?(:remember, 'sample')).to be_truthy
       end
     end
 
