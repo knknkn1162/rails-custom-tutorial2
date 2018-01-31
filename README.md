@@ -208,6 +208,6 @@ A. The yield keyword motivates us to use blocks, whereas local variable to deal 
 
 ---
 
-Q. I often forgot to `do` keyword in rspec. For instance, type `it 'calls sth'` and returns. Is there any linter to avoid this issue?
+Q. I often forgot to `do` keyword in rspec. For instance, I accidentally typed `it 'calls sth'` and returns, that should be `it 'calls sth' do`. Are there any linter to avoid this issue?
 
 ----
