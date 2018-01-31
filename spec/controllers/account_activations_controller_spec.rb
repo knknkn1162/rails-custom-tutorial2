@@ -2,14 +2,18 @@ require 'rails_helper'
 
 RSpec.describe AccountActivationsController, type: :controller do
   describe 'GET #edit' do
-    let(:user) {
+    let(:user) do
       create(:user, activated: false, activated_at: nil)
-    }
+    end
+
+    # REVIEW: cannot be authenticated? method stubbed?
+    # I tried to implement like `allow(user).to receive(:activated?)...` but it doesnt work!!
+    # Eventually, use `allow_any_instance_of` method instead..
     let(:stubbed_activated?) do
       # will allow you to stub or mock any instance of a class.
       allow_any_instance_of(User).to receive(:activated?).and_return(activated_flag)
     end
-    # REVIEW: cannot be authenticated? method stubbed?
+
     let(:stubbed_authenticated?) do
       allow_any_instance_of(User).to receive(:authenticated?).and_return(authenticated_flag)
     end
