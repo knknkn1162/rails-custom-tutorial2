@@ -34,8 +34,7 @@ class User < ApplicationRecord
 
   def authenticated?(attr, token)
     digest = send("#{attr}_digest")
-    return false if digest.nil?
-    BCrypt::Password.new(digest).is_password?(token)
+    digest.nil? ? false : BCrypt::Password.new(digest).is_password?(token)
   end
 
   private

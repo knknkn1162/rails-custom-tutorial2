@@ -87,11 +87,18 @@ RSpec.describe User, type: :model do
         expect(user.authenticated?(:remember, nil)).to be_falsy
       end
 
-      it 'successes when puts invalid remember_token' do
+      it 'successes when puts remember_token' do
         user = build(:user)
         user.remember_token = 'sample'
         user.remember_digest = generate_digest('sample')
         expect(user.authenticated?(:remember, 'sample')).to be_truthy
+      end
+
+      it 'successes when puts activation_token & activation_digest' do
+        user = build(:user)
+        user.activation_token = 'sample'
+        user.activation_digest = generate_digest('sample')
+        expect(user.authenticated?(:activation, 'sample')).to be_truthy
       end
     end
 
