@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe UserMailer, type: :mailer do
   describe 'account_activation' do
-    let(:user) { build(:user, activation_token: 'test') }
+    let(:user) { build(:user, activation_token: 'sample_activation_token') }
     let(:mail) { UserMailer.account_activation(user) }
 
     it 'renders the headers' do
@@ -13,8 +13,10 @@ RSpec.describe UserMailer, type: :mailer do
 
     it 'renders the body' do
       expect(mail.body.encoded).to match(user.name)
-      expect(mail.body.encoded).to match user.activation_token
-      expect(mail.body.encoded).to match CGI.escape(user.email)
+      activation_url = root_url + "account_activations/#{user.activation_token}/edit" + "?email=#{CGI.escape(user.email)}"
+      expect(mail.body.encoded).to have_link(href: activation_url, text: 'Activate')
+      # text only
+      expect(mail.body.encoded).to have_content(activation_url, count: 1)
     end
   end
 
