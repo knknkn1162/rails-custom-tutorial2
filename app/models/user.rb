@@ -46,7 +46,7 @@ class User < ApplicationRecord
 
   def create_activation_digest
     self.activation_token = generate_token
-    self.activation_digest = generate_digest(remember_token)
+    self.activation_digest = generate_digest(activation_token)
   end
 
 end
