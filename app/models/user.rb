@@ -1,7 +1,11 @@
 class User < ApplicationRecord
   include UsersHelper
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
+  # calls when create or update
   before_save :downcase_email
+  # calls when create only
+  before_create :create_activation_digest
+
   validates :name,
     presence: true,
     length: { maximum: 50 }
@@ -36,6 +40,11 @@ class User < ApplicationRecord
 
   def downcase_email
     email.downcase!
+  end
+
+  def create_activation_digest
+    self.activation_token = generate_token
+    self.activation_digest = generate_digest(remember_token)
   end
 
 end

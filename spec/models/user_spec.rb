@@ -116,12 +116,45 @@ RSpec.describe User, type: :model do
       user.send(:downcase_email)
       expect(user.email).to eq 'foo@example.com'
     end
+
+    it 'creates activation_digest' do
+      user = build(:user)
+      user.send(:create_activation_digest)
+      expect(user.activation_token).to be
+      expect(user.activation_digest).to be
+    end
   end
 
+  # The way to test callbacks is the link below:
+  # https://stackoverflow.com/a/16678194/8774173
+  # that is independent of the gem, https://github.com/jdliss/shoulda-callback-matchers
   describe 'when callbacks' do
-    let(:user) { create(:user) }
-    it 'calls downcase_email before_save' do
-      expect(user).to callback(:downcase_email).before(:save)
+    describe 'when downcase_email' do
+      it 'calls before create' do
+        user = build(:user)
+        expect(user).to receive(:downcase_email)
+        user.save
+      end
+
+      it 'calls before update' do
+        user = create(:user)
+        expect(user).to receive(:downcase_email)
+        user.update_attribute(:email, 'uPDate@example.com')
+      end
+    end
+
+    describe 'when create_activation_digest' do
+      it 'calls before save' do
+        user = build(:user)
+        expect(user).to receive(:create_activation_digest)
+        user.save
+      end
+
+      it 'doesnt call before update' do
+        user = create(:user)
+        expect(user).not_to receive(:create_activation_digest)
+        user.update_attributes(name: 'other', email: 'uPDate@example.com')
+      end
     end
   end
 end
