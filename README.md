@@ -207,3 +207,7 @@ Q. What is the difference between yield and local variable in a partial?
 A. The yield keyword motivates us to use blocks, whereas local variable to deal with just variable. The expression `yield(:sub)` layouts by calling `content_for` method.  See also, http://api.rubyonrails.org/v5.1/classes/ActionView/Helpers/CaptureHelper.html#method-i-content_for
 
 ---
+
+Q. I often forgot to `do` keyword in rspec. For instance, type `it 'calls sth'` and returns. Is there any linter to avoid this issue?
+
+----
