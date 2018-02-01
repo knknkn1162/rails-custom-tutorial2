@@ -24,7 +24,8 @@ RSpec.describe "sessions/new.html.erb", type: :view do
     end
 
     it 'displays link' do
-      expect(rendered).to have_link href: signup_path
+      expect(rendered).to have_link href: '/signup'
+      expect(rendered).to have_link href: '/password_resets/new'
     end
   end
 end
