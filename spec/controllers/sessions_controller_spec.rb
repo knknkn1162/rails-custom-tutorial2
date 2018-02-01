@@ -10,22 +10,26 @@ RSpec.describe SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
+    let(:user_attrs) { attributes_for(:user) }
     let(:post_create) do
       create(:user) do |user|
         post :create, params: { session: {
-          email: user.email,
+          email: user_email,
           password: user_password,
           remember_me: remember_me_flag,
           activated: activated_flag
         } }
       end
     end
-    describe 'if success' do
-      let(:user_password) { attributes_for(:user)[:password] }
-      let(:activated_flag) { true }
-      # NOTE: checkedbox expresses '1', not true!
-      let(:remember_me_flag) { '1' }
 
+    # default
+    let(:user_email) { user_attrs[:email] }
+    let(:user_password) { user_attrs[:password] }
+    let(:activated_flag) { true }
+    # NOTE: checkedbox expresses '1', not true!
+    let(:remember_me_flag) { '1' }
+
+    describe 'if success' do
       it 'saves new user' do
         expect do
           post_create
@@ -104,51 +108,39 @@ RSpec.describe SessionsController, type: :controller do
       end
     end
 
-    # describe 'when failure' do
-      # describe 'if email failure' do
-        # let(:login_invalid_user) do
-          # create(:user) do |user|
-            # post :create, params: { session: {
-              # email: 'dummy@password.com',
-              # password: user.password
-            # } }
-          # end
-        # end
+    describe 'when failure' do
+      let(:expect_render_new) do
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template('sessions/new')
+      end
 
-        # it 'renders the sessions/new template' do
-          # login_invalid_user
-          # expect(response).to have_http_status(:success)
-          # expect(response).to render_template('sessions/new')
-        # end
+      let(:expect_danger_flash) do
+        expect(flash[:danger]).to be
+      end
+      before(:each) { post_create }
 
-        # it 'flash danger' do
-          # login_invalid_user
-          # expect(flash[:danger]).to be
-        # end
-      # end
+      describe 'if email failure' do
+        let(:user_email) { 'dummy' }
+        it 'renders the sessions/new template' do
+          expect_render_new
+        end
 
-      # describe 'if password failure' do
-        # let(:login_invalid_user) do
-          # create(:user) do |user|
-            # post :create, params: { session: {
-              # email: user.email,
-              # password: user.password + 'dummy'
-            # } }
-          # end
-        # end
+        it 'flash danger' do
+          expect_danger_flash
+        end
+      end
 
-        # it 'renders the sessions/new template' do
-          # login_invalid_user
-          # expect(response).to have_http_status(:success)
-          # expect(response).to render_template('sessions/new')
-        # end
+      describe 'if password failure' do
+        let(:user_password) { 'dummy' }
+        it 'renders the sessions/new template' do
+          expect_render_new
+        end
 
-        # it 'flash danger' do
-          # login_invalid_user
-          # expect(flash[:danger]).to be
-        # end
-      # end
-    # end
+        it 'flash danger' do
+          expect_danger_flash
+        end
+      end
+    end
   end
 
   describe 'DELETE #destroy' do
