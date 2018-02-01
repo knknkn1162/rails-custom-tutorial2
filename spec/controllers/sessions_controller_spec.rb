@@ -10,20 +10,20 @@ RSpec.describe SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:user_attrs) { attributes_for(:user) }
+    let(:user) do
+      create(:user, activated: activated_flag)
+    end
     let(:post_create) do
-      create(:user, activated: activated_flag) do |user|
-        post :create, params: { session: {
-          email: user_email,
-          password: user_password,
-          remember_me: remember_me_flag,
-        } }
-      end
+      post :create, params: { session: {
+        email: user_email,
+        password: user_password,
+        remember_me: remember_me_flag
+      } }
     end
 
     # default
-    let(:user_email) { user_attrs[:email] }
-    let(:user_password) { user_attrs[:password] }
+    let(:user_email) { user.email }
+    let(:user_password) { user.password }
     # NOTE: checkedbox expresses '1', not true!
     let(:remember_me_flag) { '1' }
     let(:activated_flag) { true }
@@ -36,7 +36,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'redirects the :create template if success' do
-        user = post_create
+        post_create
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to("/users/#{user.id}")
       end
@@ -57,7 +57,7 @@ RSpec.describe SessionsController, type: :controller do
 
       it 'contains user_id in session to confirm log_in method' do
         expect(session[:user_id]).not_to be
-        user = post_create
+        post_create
         expect(session[:user_id]).to eq user.id
       end
 
@@ -67,7 +67,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'should work contain non-empty cookies' do
-        user = post_create
+        post_create
         assigned_user = assigns(:user)
         # see https://stackoverflow.com/a/5482517/8774173
         jar = request.cookie_jar
