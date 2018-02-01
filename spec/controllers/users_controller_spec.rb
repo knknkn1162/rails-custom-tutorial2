@@ -25,9 +25,10 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'when #index' do
     describe 'when pagination doesnt exist' do
-      let!(:users) do
-        create_list(:other, 5)
+      let(:users) do
+        create_list(:other, 5, activated: activated_flag)
       end
+      let(:activated_flag) { true }
       before(:each) do
         ignore_before_action
         get :index, params: {}, session: {}
@@ -43,6 +44,14 @@ RSpec.describe UsersController, type: :controller do
 
       it 'renders the :index template' do
         expect(response).to render_template(:index)
+      end
+
+      describe 'when all users un-activated' do
+        let(:activated_flag) { false }
+
+        it 'assigns @users' do
+          expect(assigns(:users)).to be_empty
+        end
       end
     end
 
