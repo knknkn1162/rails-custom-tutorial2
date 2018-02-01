@@ -25,9 +25,10 @@ RSpec.describe UsersController, type: :controller do
 
   describe 'when #index' do
     describe 'when pagination doesnt exist' do
-      let!(:users) do
-        create_list(:other, 5)
+      let(:users) do
+        create_list(:other, 5, activated: activated_flag)
       end
+      let(:activated_flag) { true }
       before(:each) do
         ignore_before_action
         get :index, params: {}, session: {}
@@ -43,6 +44,14 @@ RSpec.describe UsersController, type: :controller do
 
       it 'renders the :index template' do
         expect(response).to render_template(:index)
+      end
+
+      describe 'when all users un-activated' do
+        let(:activated_flag) { false }
+
+        it 'assigns @users' do
+          expect(assigns(:users)).to be_empty
+        end
       end
     end
 
@@ -91,6 +100,14 @@ RSpec.describe UsersController, type: :controller do
     it 'assigns @user' do
       expect(assigns(:user)).to eq user
     end
+
+    describe 'when un-activated user' do
+      let(:user) { create(:user, activated: false) }
+      it 'returns http success' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
+    end
   end
 
   describe 'POST #create' do
@@ -112,15 +129,14 @@ RSpec.describe UsersController, type: :controller do
 
       it 'should get redirect status and redirect to show page' do
         post_create
-        user = User.last
         # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
         expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to("/users/#{user.id}")
+        expect(response).to redirect_to('/')
       end
 
       it 'should flash correctly' do
         post_create
-        expect(flash[:success]).to be
+        expect(flash).not_to be_empty
       end
     end
 

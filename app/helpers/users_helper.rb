@@ -24,7 +24,7 @@ module UsersHelper
       get_user(user_id)
     else
       user = get_user(cookies.signed['user_id'])
-      if user&.authorized?(remember_token)
+      if user&.authenticated?(:remember, cookies[:remember_token])
         set_log_in_session user
         user
       end

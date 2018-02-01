@@ -5,6 +5,8 @@ FactoryBot.define do
     password 'foobar'
     password_confirmation 'foobar'
     admin true
+    activated true
+    activated_at { Time.zone.now }
 
     # TODO: confirm the right way to generate fixtures
     factory :other do

@@ -1,7 +1,11 @@
 class User < ApplicationRecord
   include UsersHelper
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token
+  # calls when create or update
   before_save :downcase_email
+  # calls when create only
+  before_create :create_activation_digest
+
   validates :name,
     presence: true,
     length: { maximum: 50 }
@@ -24,18 +28,32 @@ class User < ApplicationRecord
     update_attribute(:remember_digest, generate_digest(remember_token))
   end
 
-  def authenticated?(remember_token)
-    remember_digest ? BCrypt::Password.new(remember_digest).is_password?(remember_token) : false
-  end
-
   def forget
     update_attribute(:remember_digest, nil)
+  end
+
+  def activate
+    update_attributes(activated: true, activated_at: Time.zone.now)
+  end
+
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  def authenticated?(attr, token)
+    digest = send("#{attr}_digest")
+    digest.nil? ? false : BCrypt::Password.new(digest).is_password?(token)
   end
 
   private
 
   def downcase_email
     email.downcase!
+  end
+
+  def create_activation_digest
+    self.activation_token = generate_token
+    self.activation_digest = generate_digest(activation_token)
   end
 
 end

@@ -1,122 +1,180 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  context 'when invalid name contains' do
-    it 'should be non-empty name' do
-      user = build(:user, name: ' ')
-      expect(user).not_to be_valid
-    end
 
-    it 'should not be long name' do
-      user = build(:user, name: 'a' * 51)
-      expect(user).not_to be_valid
-    end
-  end
+  describe 'when validation check' do
+    context 'when invalid name contains' do
+      it 'should be non-empty name' do
+        user = build(:user, name: ' ')
+        expect(user).not_to be_valid
+      end
 
-  context 'when the invalid email contains' do
-    it 'should be non-empty email' do
-      user = build(:user, email: ' ')
-      expect(user).not_to be_valid
-    end
-
-    it 'should not be long email' do
-      suffix = '@example.com'
-      user = build(:user, email: 'a' * (256 - suffix.length) + suffix)
-      expect(user).not_to be_valid
-    end
-
-    it 'should be email-formatted' do
-      %w[user@example,com
-         user_at_foo.org
-         user.name@example.foo@bar_baz.com
-         foo@bar+baz.com].each do |address|
-        user = build(:user, email: address)
+      it 'should not be long name' do
+        user = build(:user, name: 'a' * 51)
         expect(user).not_to be_valid
       end
     end
 
-    it 'should be unique email' do
-      create(:user)
-      duplicated_user = build(:user)
-      expect(duplicated_user).not_to be_valid
-    end
-  end
+    context 'when the invalid email contains' do
+      it 'should be non-empty email' do
+        user = build(:user, email: ' ')
+        expect(user).not_to be_valid
+      end
 
-  context 'when the invalid password contains' do
-    it 'should be present(nonblank) password' do
-      user = build(:user, password: ' ' * 6)
-      expect(user).not_to be_valid
+      it 'should not be long email' do
+        suffix = '@example.com'
+        user = build(:user, email: 'a' * (256 - suffix.length) + suffix)
+        expect(user).not_to be_valid
+      end
+
+      it 'should be email-formatted' do
+        %w[user@example,com
+          user_at_foo.org
+          user.name@example.foo@bar_baz.com
+          foo@bar+baz.com].each do |address|
+          user = build(:user, email: address)
+          expect(user).not_to be_valid
+        end
+      end
+
+      it 'should be unique email' do
+        create(:user)
+        duplicated_user = build(:user)
+        expect(duplicated_user).not_to be_valid
+      end
     end
 
-    it 'should be at least 6 characters' do
-      invalid_password = 'a' * 5
-      user = build(:user, password: invalid_password, password_confirmation: 5)
-      expect(user).not_to be_valid
-    end
-  end
+    context 'when the invalid password contains' do
+      it 'should be present(nonblank) password' do
+        user = build(:user, password: ' ' * 6)
+        expect(user).not_to be_valid
+      end
 
-  context 'when the valid email contains' do
-    it 'should be email-formatted' do
-      %w[user@example.com
-         USER@foo.COM
-         A_US-ER@foo.bar.org
-         first.last@foo.jp
-         alice+bob@baz.cn].each do |address|
-        user = build(:user, email: address)
-        expect(user).to be_valid
+      it 'should be at least 6 characters' do
+        invalid_password = 'a' * 5
+        user = build(:user, password: invalid_password, password_confirmation: 5)
+        expect(user).not_to be_valid
+      end
+    end
+
+    context 'when the valid email contains' do
+      it 'should be email-formatted' do
+        %w[user@example.com
+          USER@foo.COM
+          A_US-ER@foo.bar.org
+          first.last@foo.jp
+          alice+bob@baz.cn].each do |address|
+          user = build(:user, email: address)
+          expect(user).to be_valid
+        end
       end
     end
   end
 
-  context 'when callbacks' do
-    let(:user) { create(:user) }
-    it 'calls downcase_email before_save' do
-      expect(user).to callback(:downcase_email).before(:save)
-    end
-  end
-
-  context 'when public method calls' do
+  describe 'when public method calls' do
     include UsersHelper
     it 'tests remember method' do
       user = build(:user)
       user.remember
       expect(user.remember_token).to be
-      expect(BCrypt::Password.new(user.remember_digest)).to eq user.remember_token
+      expect(
+        BCrypt::Password.new(user.remember_digest)
+      ).to eq user.remember_token
     end
 
-    describe 'tests authenticated? method' do
+    context 'tests authenticated? method' do
       it 'fails when not remembered' do
         user = build(:user)
-        expect(user.authenticated?(nil)).to be_falsy
+        expect(user.authenticated?(:remember, nil)).to be_falsy
       end
 
-      it 'fails when puts invalid remember_token' do
+      it 'successes when puts remember_token' do
         user = build(:user)
-        user.remember
-        expect(user.authenticated?('')).to be_falsy
+        user.remember_token = 'sample'
+        user.remember_digest = generate_digest('sample')
+        expect(user.authenticated?(:remember, 'sample')).to be_truthy
       end
 
-      it 'succeed when remember_digest' do
+      it 'successes when puts activation_token & activation_digest' do
         user = build(:user)
-        user.remember
-
-        expect(user.authenticated?(user.remember_token)).to be_truthy
+        user.activation_token = 'sample'
+        user.activation_digest = generate_digest('sample')
+        expect(user.authenticated?(:activation, 'sample')).to be_truthy
       end
     end
 
-    describe 'when forget method' do
+    context 'when forget method' do
       it 'clear remember_digest' do
         user = build(:user, remember_digest: 'sample')
         user.forget
         expect(user.remember_digest).not_to be
       end
     end
+
+    context 'when activate method' do
+      it 'success' do
+        user = build(:user, activated: false)
+        user.activate
+        expect(user.activate).to be_truthy
+        expect(user.activated_at).to be
+      end
+    end
+
+    context 'when send_activation_email' do
+      it 'success' do
+        user = create(:user)
+        expect do
+          user.send_activation_email
+        end.to change{ ActionMailer::Base.deliveries.size }.by(1)
+      end
+    end
   end
-  context 'when private method calls' do
+
+  describe 'when private method calls' do
     it 'downcases email' do
       user = build(:user, email: 'Foo@ExAmPLe.COm')
       user.send(:downcase_email)
       expect(user.email).to eq 'foo@example.com'
+    end
+
+    it 'creates activation_digest' do
+      user = build(:user)
+      user.send(:create_activation_digest)
+      expect(user.activation_token).to be
+      expect(user.activation_digest).to be
+    end
+  end
+
+  # The way to test callbacks is the link below:
+  # https://stackoverflow.com/a/16678194/8774173
+  # that is independent of the gem, https://github.com/jdliss/shoulda-callback-matchers
+  describe 'when callbacks' do
+    describe 'when downcase_email' do
+      it 'calls before create' do
+        user = build(:user)
+        expect(user).to receive(:downcase_email)
+        user.save
+      end
+
+      it 'calls before update' do
+        user = create(:user)
+        expect(user).to receive(:downcase_email)
+        user.update_attribute(:email, 'uPDate@example.com')
+      end
+    end
+
+    describe 'when create_activation_digest' do
+      it 'calls before save' do
+        user = build(:user)
+        expect(user).to receive(:create_activation_digest)
+        user.save
+      end
+
+      it 'doesnt call before update' do
+        user = create(:user)
+        expect(user).not_to receive(:create_activation_digest)
+        user.update_attributes(name: 'other', email: 'uPDate@example.com')
+      end
     end
   end
 end
