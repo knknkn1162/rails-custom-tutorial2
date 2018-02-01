@@ -100,6 +100,14 @@ RSpec.describe UsersController, type: :controller do
     it 'assigns @user' do
       expect(assigns(:user)).to eq user
     end
+
+    describe 'when un-activated user' do
+      let(:user) { create(:user, activated: false) }
+      it 'returns http success' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
+    end
   end
 
   describe 'POST #create' do
