@@ -10,32 +10,37 @@ RSpec.describe SessionsController, type: :controller do
   end
 
   describe 'POST #create' do
-    describe 'if success' do
-      let(:post_user) do
-        create(:user) do |user|
-          post :create, params: { session: {
-            email: user.email,
-            password: user.password,
-            # NOTE: checkedbox expresses '1', not true!
-            remember_me: '1'
-          } }
-        end
+    let(:post_create) do
+      create(:user) do |user|
+        post :create, params: { session: {
+          email: user.email,
+          password: user_password,
+          remember_me: remember_me_flag,
+          activated: activated_flag
+        } }
       end
+    end
+    describe 'if success' do
+      let(:user_password) { attributes_for(:user)[:password] }
+      let(:activated_flag) { true }
+      # NOTE: checkedbox expresses '1', not true!
+      let(:remember_me_flag) { '1' }
+
       it 'saves new user' do
         expect do
-          post_user
+          post_create
         end.to change(User, :count).by(1)
       end
 
       it 'redirects the :create template if success' do
-        user = post_user
+        user = post_create
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to("/users/#{user.id}")
       end
 
       it 'redirects the :other template if forwarding_url is stored in session' do
         session[:forwarding_url] = root_url
-        post_user
+        post_create
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to('/')
 
@@ -43,23 +48,23 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'doesnt flash' do
-        post_user
+        post_create
         expect(flash).to be_empty
       end
 
       it 'contains user_id in session to confirm log_in method' do
         expect(session[:user_id]).not_to be
-        user = post_user
+        user = post_create
         expect(session[:user_id]).to eq user.id
       end
 
       it 'should contain non-empty flash' do
-        post_user
+        post_create
         expect(flash).to be_empty
       end
 
       it 'should work contain non-empty cookies' do
-        user = post_user
+        user = post_create
         assigned_user = assigns(:user)
         # see https://stackoverflow.com/a/5482517/8774173
         jar = request.cookie_jar
@@ -73,8 +78,9 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       describe 'when checkbox is true' do
+        let(:remember_me_flag) { '1' }
         it 'contains remember_token, remember_digest attr and cookies' do
-          post_user
+          post_create
           assigned_user = assigns(:user)
           expect(assigned_user.remember_token).to be
           expect(assigned_user.remember_digest).to be
@@ -82,15 +88,7 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       describe 'when checkbox is false' do
-        let(:post_create) do
-          create(:user) do |user|
-            post :create, params: { session: {
-              email: user.email,
-              password: user.password,
-              remember_me: '0'
-            } }
-          end
-        end
+        let(:remember_me_flag) { '0' }
         it 'doesnt contains remember_token, remember_digest attr and cookies' do
           post_create
           assigned_user = assigns(:user)
@@ -101,54 +99,56 @@ RSpec.describe SessionsController, type: :controller do
       end
 
       it 'assigns last user' do
-        post_user
+        post_create
         expect(assigns(:user)).to eq User.last
       end
     end
 
-    describe 'if email failure' do
-      let(:login_invalid_user) do
-        create(:user) do |user|
-          post :create, params: { session: {
-            email: 'dummy@password.com',
-            password: user.password
-          } }
-        end
-      end
+    # describe 'when failure' do
+      # describe 'if email failure' do
+        # let(:login_invalid_user) do
+          # create(:user) do |user|
+            # post :create, params: { session: {
+              # email: 'dummy@password.com',
+              # password: user.password
+            # } }
+          # end
+        # end
 
-      it 'renders the sessions/new template' do
-        login_invalid_user
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template('sessions/new')
-      end
+        # it 'renders the sessions/new template' do
+          # login_invalid_user
+          # expect(response).to have_http_status(:success)
+          # expect(response).to render_template('sessions/new')
+        # end
 
-      it 'flash danger' do
-        login_invalid_user
-        expect(flash[:danger]).to be
-      end
-    end
+        # it 'flash danger' do
+          # login_invalid_user
+          # expect(flash[:danger]).to be
+        # end
+      # end
 
-    describe 'if password failure' do
-      let(:login_invalid_user) do
-        create(:user) do |user|
-          post :create, params: { session: {
-            email: user.email,
-            password: user.password + 'dummy'
-          } }
-        end
-      end
+      # describe 'if password failure' do
+        # let(:login_invalid_user) do
+          # create(:user) do |user|
+            # post :create, params: { session: {
+              # email: user.email,
+              # password: user.password + 'dummy'
+            # } }
+          # end
+        # end
 
-      it 'renders the sessions/new template' do
-        login_invalid_user
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template('sessions/new')
-      end
+        # it 'renders the sessions/new template' do
+          # login_invalid_user
+          # expect(response).to have_http_status(:success)
+          # expect(response).to render_template('sessions/new')
+        # end
 
-      it 'flash danger' do
-        login_invalid_user
-        expect(flash[:danger]).to be
-      end
-    end
+        # it 'flash danger' do
+          # login_invalid_user
+          # expect(flash[:danger]).to be
+        # end
+      # end
+    # end
   end
 
   describe 'DELETE #destroy' do
