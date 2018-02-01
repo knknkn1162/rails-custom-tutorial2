@@ -7,9 +7,31 @@ def login_as(user)
   click_button 'Log in'
 end
 
+def signup(user)
+  fill_in 'Name', with: user.name
+  fill_in 'Email', with: user.email
+  fill_in 'Password', with: user.password
+  fill_in 'Confirmation', with: user.password_confirmation
+  click_button 'Create my account'
+end
+
 RSpec.feature 'Users', type: :feature do
-  let!(:user) { create(:user) }
+  let(:user) { create(:user) }
   let!(:others) { create_list(:other, 31) }
+
+  describe 'when signup' do
+    before(:each) do
+      visit '/signup'
+      signup(user)
+    end
+    describe 'when invalid user' do
+      let(:user) { create(:user, name: ' ') }
+      it 'renders error information' do
+        expect(page).to have_selector 'div#error_explanation'
+        expect(page).to have_selector 'div.field_with_errors'
+      end
+    end
+  end
 
   describe 'when login' do
     before(:each) { visit '/' }
