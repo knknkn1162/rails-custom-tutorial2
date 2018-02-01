@@ -12,12 +12,11 @@ RSpec.describe SessionsController, type: :controller do
   describe 'POST #create' do
     let(:user_attrs) { attributes_for(:user) }
     let(:post_create) do
-      create(:user) do |user|
+      create(:user, activated: activated_flag) do |user|
         post :create, params: { session: {
           email: user_email,
           password: user_password,
           remember_me: remember_me_flag,
-          activated: activated_flag
         } }
       end
     end
@@ -25,9 +24,9 @@ RSpec.describe SessionsController, type: :controller do
     # default
     let(:user_email) { user_attrs[:email] }
     let(:user_password) { user_attrs[:password] }
-    let(:activated_flag) { true }
     # NOTE: checkedbox expresses '1', not true!
     let(:remember_me_flag) { '1' }
+    let(:activated_flag) { true }
 
     describe 'if success' do
       it 'saves new user' do
@@ -117,7 +116,9 @@ RSpec.describe SessionsController, type: :controller do
       let(:expect_danger_flash) do
         expect(flash[:danger]).to be
       end
-      before(:each) { post_create }
+      before(:each) do
+        post_create
+      end
 
       describe 'if email failure' do
         let(:user_email) { 'dummy' }
@@ -138,6 +139,18 @@ RSpec.describe SessionsController, type: :controller do
 
         it 'flash danger' do
           expect_danger_flash
+        end
+      end
+
+      describe 'if unactivated user' do
+        let(:activated_flag) { false }
+        it 'renders the sessions/new template' do
+          expect(flash[:warning]).to be
+        end
+
+        it 'flash danger' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to '/'
         end
       end
     end
