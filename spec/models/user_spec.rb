@@ -1,9 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  before(:each) do
-    ActionMailer::Base.deliveries.clear
-  end
 
   describe 'when validation check' do
     context 'when invalid name contains' do
