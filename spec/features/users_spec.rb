@@ -25,7 +25,7 @@ RSpec.feature 'Users', type: :feature do
       signup(user)
     end
     describe 'when invalid user' do
-      let(:user) { create(:user, name: ' ') }
+      let(:user) { build(:user, name: ' ') }
       it 'renders error information' do
         expect(page).to have_selector 'div#error_explanation'
         expect(page).to have_selector 'div.field_with_errors'
