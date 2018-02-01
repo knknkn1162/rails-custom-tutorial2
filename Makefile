@@ -1,3 +1,6 @@
+rspec:
+	spring rspec -fd
+
 rspec-c:
 	spring rspec -fd spec/controllers
 
