@@ -16,7 +16,7 @@ RSpec.describe "password_resets/new.html.erb", type: :view do
 
     it 'displays button' do
       expect(rendered).to have_button(value: 'Submit', count: 1)
-      #expect(rendered).to have_button(count: 1)
+      expect(rendered).to have_button(count: 1)
     end
   end
 end
