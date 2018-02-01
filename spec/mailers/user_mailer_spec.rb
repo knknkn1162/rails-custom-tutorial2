@@ -30,8 +30,11 @@ RSpec.describe UserMailer, type: :mailer do
       expect(mail.from).to eq(['noreply@example.com'])
     end
 
-    # it 'renders the body' do
-      # expect(mail.body.encoded).to match('Hi')
-    # end
+    it 'renders the body' do
+      password_resets_url = root_url + "password_resets/#{user.reset_token}/edit" + "?email=#{CGI.escape(user.email)}"
+      expect(mail.body.encoded).to have_link(href: password_resets_url, text: 'Reset password')
+      # text only
+      expect(mail.body.encoded).to have_content(password_resets_url, count: 1)
+    end
   end
 end
