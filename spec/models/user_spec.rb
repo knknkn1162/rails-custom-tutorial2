@@ -1,6 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
+  before(:each) do
+    ActionMailer::Base.deliveries.clear
+  end
+
   describe 'when validation check' do
     context 'when invalid name contains' do
       it 'should be non-empty name' do
@@ -107,6 +111,24 @@ RSpec.describe User, type: :model do
         user = build(:user, remember_digest: 'sample')
         user.forget
         expect(user.remember_digest).not_to be
+      end
+    end
+
+    context 'when activate method' do
+      it 'success' do
+        user = build(:user, activated: false)
+        user.activate
+        expect(user.activate).to be_truthy
+        expect(user.activated_at).to be
+      end
+    end
+
+    context 'when send_activation_email' do
+      it 'success' do
+        user = create(:user)
+        expect do
+          user.send_activation_email
+        end.to change{ ActionMailer::Base.deliveries.size }.by(1)
       end
     end
   end
