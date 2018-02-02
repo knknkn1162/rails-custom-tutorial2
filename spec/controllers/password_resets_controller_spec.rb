@@ -2,16 +2,24 @@ require 'rails_helper'
 
 RSpec.describe PasswordResetsController, type: :controller do
   include UsersHelper
-  let(:get_user_with_validation_ok) do
-    allow(controller).to receive(:get_user_with_validation).and_return(true)
+  let(:stubbed_get_user_with_validation) do
+    allow(controller).to receive(:get_user_with_validation).and_return(get_user_with_validation_flag)
   end
+
+  let(:stubbed_check_expiration) do
+    allow(controller).to receive(:check_expiration).and_return(check_expiration_flag)
+  end
+
   let(:user) { create(:user, reset_digest: generate_digest(sample_token)) }
   let(:ignore_before_filter) do
-    get_user_with_validation_ok
+    stubbed_get_user_with_validation
+    stubbed_check_expiration
   end
 
   #default
   let(:sample_token) { 'sample_token' }
+  let(:check_expiration_flag) { true }
+  let(:get_user_with_validation_flag) { true }
 
   describe 'GET #new' do
     it 'returns http success' do
@@ -59,7 +67,7 @@ RSpec.describe PasswordResetsController, type: :controller do
       it 'sends mailer' do
         expect do
           post_create
-        end.to change{ ActionMailer::Base.deliveries.size }.by(1)
+        end.to change { ActionMailer::Base.deliveries.size }.by(1)
       end
     end
 
@@ -105,6 +113,68 @@ RSpec.describe PasswordResetsController, type: :controller do
       end
 
       def edit
+      end
+    end
+
+    describe 'when check_expiration calls' do
+      let(:stubbed_password_reset_expired?) do
+        allow_any_instance_of(User).to receive(:password_reset_expired?).and_return(password_reset_expired_flag)
+      end
+
+      # default
+      let(:password_reset_expired_flag) { false }
+      before(:each) do
+        stubbed_get_user_with_validation
+        stubbed_password_reset_expired?
+        action
+      end
+
+      describe 'when GET #edit' do
+        let(:action) do
+          get :edit, params: { id: 'dummy', email: user.email }
+        end
+
+        describe 'when expired (failure)' do
+          let(:password_reset_expired_flag) { true }
+          it 'flashes danger' do
+            expect(flash[:danger]).to be
+          end
+
+          it 'redirects new_password_reset_url' do
+            expect(response).to have_http_status(:redirect)
+            expect(response).to redirect_to '/password_resets/new'
+          end
+        end
+
+        describe 'when not expired (succeed)' do
+          it 'has success status' do
+            expect(response).to have_http_status(:success)
+          end
+        end
+      end
+
+      describe 'when PATCH #update' do
+        let(:action) do
+          patch :update, params: { id: 'dummy', email: user.email }
+        end
+
+        describe 'when expired (failure)' do
+          let(:password_reset_expired_flag) { true }
+          it 'flashes danger' do
+            expect(flash[:danger]).to be
+          end
+
+          it 'redirects new_password_reset_url' do
+            expect(response).to have_http_status(:redirect)
+            expect(response).to redirect_to '/password_resets/new'
+          end
+        end
+
+        describe 'when not expired (succeed)' do
+          it 'has success status' do
+            expect(response).to have_http_status(:success)
+          end
+        end
       end
     end
 

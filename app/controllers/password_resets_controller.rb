@@ -1,5 +1,7 @@
 class PasswordResetsController < ApplicationController
+  # REVIEW: Are these methods always orderly executed?
   before_action :get_user_with_validation, only: %i[edit update]
+  before_action :check_expiration, only: %i[edit update]
 
   def new
   end
@@ -31,9 +33,17 @@ class PasswordResetsController < ApplicationController
   end
 
   def get_user_with_validation
-    get_user
+    get_user unless @user
     unless (@user&.activated? && @user&.authenticated?(:reset, params[:id]))
       redirect_to root_url
+    end
+  end
+
+  def check_expiration
+    get_user unless @user
+    if @user.password_reset_expired?
+      flash[:danger] = 'Password reset has expired'
+      redirect_to new_password_reset_url
     end
   end
 end
