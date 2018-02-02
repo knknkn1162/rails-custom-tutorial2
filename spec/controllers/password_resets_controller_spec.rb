@@ -161,6 +161,11 @@ RSpec.describe PasswordResetsController, type: :controller do
         assigned_user = assigns(:user)
         expect(assigned_user.admin).to be_truthy
       end
+
+      it 'delete reset_digest' do
+        assigned_user = assigns(:user)
+        expect(assigned_user.reset_digest).to be_falsy
+      end
     end
 
     describe 'when valid user_params' do
