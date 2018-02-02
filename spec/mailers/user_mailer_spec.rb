@@ -20,17 +20,21 @@ RSpec.describe UserMailer, type: :mailer do
     end
   end
 
-  # describe 'password_reset' do
-    # let(:mail) { UserMailer.password_reset }
+  describe 'password_reset' do
+    let(:user) { build(:user, reset_token: 'sample_reset_token') }
+    let(:mail) { UserMailer.password_reset(user) }
 
-    # it 'renders the headers' do
-      # expect(mail.subject).to eq('Password reset')
-      # expect(mail.to).to eq(['to@example.org'])
-      # expect(mail.from).to eq(['from@example.com'])
-    # end
+    it 'renders the headers' do
+      expect(mail.subject).to eq('Password reset')
+      expect(mail.to).to eq([user.email])
+      expect(mail.from).to eq(['noreply@example.com'])
+    end
 
-    # it 'renders the body' do
-      # expect(mail.body.encoded).to match('Hi')
-    # end
-  # end
+    it 'renders the body' do
+      password_resets_url = root_url + "password_resets/#{user.reset_token}/edit" + "?email=#{CGI.escape(user.email)}"
+      expect(mail.body.encoded).to have_link(href: password_resets_url, text: 'Reset password')
+      # text only
+      expect(mail.body.encoded).to have_content(password_resets_url, count: 1)
+    end
+  end
 end

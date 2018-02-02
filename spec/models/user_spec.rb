@@ -120,12 +120,43 @@ RSpec.describe User, type: :model do
       end
     end
 
+    context 'create_reset_digest' do
+      it 'success' do
+        user = build(:user)
+        user.create_reset_digest
+        expect(user.reset_token).to be
+        expect(user.reset_digest).to be
+        expect(user.reset_sent_at).to be
+      end
+    end
+
     context 'when send_activation_email' do
       it 'success' do
         user = create(:user)
         expect do
           user.send_activation_email
         end.to change{ ActionMailer::Base.deliveries.size }.by(1)
+      end
+    end
+
+    context 'when send_password_reset_email' do
+      it 'success' do
+        user = create(:user, reset_token: 'sample_token')
+        expect do
+          user.send_password_reset_email
+        end.to change{ ActionMailer::Base.deliveries.size }.by(1)
+      end
+    end
+
+    context 'when password_reset_expired?' do
+      it 'not expired (false)' do
+        user = create(:user, reset_sent_at: Time.zone.now)
+        expect(user.password_reset_expired?).to be_falsy
+      end
+
+      it 'expired (true)' do
+        user = create(:user, reset_sent_at: 3.hours.ago)
+        expect(user.password_reset_expired?).to be_truthy
       end
     end
   end
