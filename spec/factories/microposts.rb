@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :micropost do
-    content "MyText"
+    sequence(:content) { |n| "sample-#{n}" }
     user nil
   end
 end

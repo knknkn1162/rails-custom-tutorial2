@@ -15,5 +15,15 @@ FactoryBot.define do
       sequence(:email) { |n| "example_#{n}@gmail.com" }
       admin false
     end
+
+    factory :user_with_microposts do
+      transient do
+        microposts_count 5
+      end
+
+      after(:create) do |user, evaluator|
+        create_list(:micropost, evaluator.microposts_count, user: user)
+      end
+    end
   end
 end
