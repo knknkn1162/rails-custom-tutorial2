@@ -107,6 +107,78 @@ RSpec.describe PasswordResetsController, type: :controller do
     end
   end
 
+  describe 'PATCH #update' do
+    let(:token) { 'sample_token' }
+    before(:each) do
+      ignore_before_filter
+      patch :update, params: { email: user.email, user: user_params, id: token }
+    end
+
+    # default
+    let(:user_params) do
+      { password: 'new_password',
+      password_confirmation: 'new_password' }
+    end
+
+    describe 'when password is empty' do
+      let(:user_params) { { password: '' } }
+      it 'raise blank error' do
+        assigned_user = assigns(:user)
+        expect(assigned_user.errors).not_to be_empty
+      end
+
+      it 'renders :edit' do
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template('password_resets/edit')
+      end
+    end
+
+    describe 'when invalid params' do
+      let(:user_params) { {
+        password: 'wrong',
+        password_confirmation: 'correct'
+      } }
+
+      it 'renders :edit' do
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template('password_resets/edit')
+      end
+    end
+
+    describe 'when valid params with changing admin' do
+      let(:user_params) { {
+        password: 'new_password',
+        password_confirmation: 'new_password',
+        admin: false
+      } }
+
+      it 'renders :show' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to("/users/#{user.id}")
+      end
+
+      it 'doesnt change admin flag' do
+        assigned_user = assigns(:user)
+        expect(assigned_user.admin).to be_truthy
+      end
+    end
+
+    describe 'when valid user_params' do
+      it 'redirects :show' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to("/users/#{user.id}")
+      end
+
+      it 'flashes success' do
+        expect(flash[:success]).to be
+      end
+
+      it 'stores session' do
+        expect(session).not_to be_empty
+      end
+    end
+  end
+
   describe 'check before_filter method' do
     controller do
       def update
