@@ -141,7 +141,7 @@ RSpec.describe User, type: :model do
 
     context 'when send_password_reset_email' do
       it 'success' do
-        user = create(:user)
+        user = create(:user, reset_token: 'sample_token')
         expect do
           user.send_password_reset_email
         end.to change{ ActionMailer::Base.deliveries.size }.by(1)
