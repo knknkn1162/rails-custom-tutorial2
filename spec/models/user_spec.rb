@@ -147,6 +147,18 @@ RSpec.describe User, type: :model do
         end.to change{ ActionMailer::Base.deliveries.size }.by(1)
       end
     end
+
+    context 'when password_reset_expired?' do
+      it 'not expired (false)' do
+        user = create(:user, reset_sent_at: Time.zone.now)
+        expect(user.password_reset_expired?).to be_falsy
+      end
+
+      it 'expired (true)' do
+        user = create(:user, reset_sent_at: 3.hours.ago)
+        expect(user.password_reset_expired?).to be_truthy
+      end
+    end
   end
 
   describe 'when private method calls' do
