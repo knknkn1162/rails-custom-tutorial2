@@ -108,132 +108,134 @@ RSpec.describe PasswordResetsController, type: :controller do
       end
     end
 
-    # describe 'when get_user_with_validation calls' do
-      # let(:stubbed_activated) do
-        # allow_any_instance_of(User).to receive(:activated?).and_return(activated_flag)
-      # end
-      # let(:stubbed_authenticated) do
-        # allow_any_instance_of(User).to receive(:authenticated?).and_return(authticated_flag)
-      # # action
-      # before(:each) do
-        # stubbed_activated
-        # stubbed_authenticated
-        # action
-      # end
+    describe 'when get_user_with_validation calls' do
+      let(:stubbed_activated) do
+        allow_any_instance_of(User).to receive(:activated?).and_return(activated_flag)
+      end
+      let(:stubbed_authenticated) do
+        allow_any_instance_of(User).to receive(:authenticated?).and_return(authenticated_flag)
+      end
 
-      # # default
-      # let(:email_flag) { user.email }
-      # let(:assigned_user) { assigns(:user) }
-      # let(:activated_flag) { true }
-      # let(:authenticated_flag) { true }
+      # action
+      before(:each) do
+        stubbed_activated
+        stubbed_authenticated
+        action
+      end
 
-      # # expectations
-      # let(:expect_assigned_user) do
-        # expect(assigned_user).to eq user
-      # end
+      # default
+      let(:email_flag) { user.email }
+      let(:assigned_user) { assigns(:user) }
+      let(:activated_flag) { true }
+      let(:authenticated_flag) { true }
 
-      # let(:expect_redirects_to_root) do
-        # expect(response).to have_http_status(:redirect)
-        # expect(response).to redirect_to('/')
-      # end
+      # expectations
+      let(:expect_assigned_user) do
+        expect(assigned_user).to eq user
+      end
 
-      # describe 'when GET #edit' do
-        # let(:action) do
-          # get :edit, params: { id: user.reset_token, email: email_flag }, session: {}
-        # end
+      let(:expect_redirects_to_root) do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
 
-        # describe 'when invalid email' do
-          # let(:email_flag) { 'dummy@gmail.com' }
-          # it 'doesnt assign user' do
-            # expect(assigned_user).not_to be
-          # end
+      describe 'when GET #edit' do
+        let(:action) do
+          get :edit, params: { id: sample_token, email: email_flag }, session: {}
+        end
 
-          # it 'redirects to root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when invalid email' do
+          let(:email_flag) { 'dummy@gmail.com' }
+          it 'doesnt assign user' do
+            expect(assigned_user).not_to be
+          end
 
-        # describe 'when un-activated user' do
-          # let(:activated_flag) { false }
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects to root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'redirects_to_root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when un-activated user' do
+          let(:activated_flag) { false }
+          it 'assigns user' do
+            expect_assigned_user
+          end
 
-        # describe 'when unauthorized user' do
-          # let(:authenticated_flag) { false }
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects_to_root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'redirects_to root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when unauthorized user' do
+          let(:authenticated_flag) { false }
+          it 'assigns user' do
+            expect_assigned_user
+          end
 
-        # describe 'when activated & authorized user' do
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects_to root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'has success status' do
-            # expect(response).to have_http_status(:success)
-          # end
-        # end
-      # end
+        describe 'when activated & authorized user' do
+          it 'assigns user' do
+            expect_assigned_user
+          end
 
-      # describe 'when PATCH #update' do
-        # let(:action) do
-          # patch :update, params: { id: user.reset_token, email: email_flag }, session: {}
-        # end
+          it 'has success status' do
+            expect(response).to have_http_status(:success)
+          end
+        end
+      end
 
-        # describe 'when invalid email' do
-          # let(:email_flag) { 'dummy@gmail.com' }
-          # it 'doesnt assign user' do
-            # expect(assigned_user).not_to be
-          # end
+      describe 'when PATCH #update' do
+        let(:action) do
+          patch :update, params: { id: sample_token, email: email_flag }, session: {}
+        end
 
-          # it 'redirects to root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when invalid email' do
+          let(:email_flag) { 'dummy@gmail.com' }
+          it 'doesnt assign user' do
+            expect(assigned_user).not_to be
+          end
 
-        # describe 'when un-activated user' do
-          # let(:activated_flag) { false }
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects to root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'redirects_to_root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when un-activated user' do
+          let(:activated_flag) { false }
+          it 'assigns user' do
+            expect_assigned_user
+          end
 
-        # describe 'when unauthorized user' do
-          # let(:authenticated_flag) { false }
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects_to_root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'redirects_to root_url' do
-            # expect_redirects_to_root
-          # end
-        # end
+        describe 'when unauthorized user' do
+          let(:authenticated_flag) { false }
+          it 'assigns user' do
+            expect_assigned_user
+          end
 
-        # describe 'when activated & authorized user' do
-          # it 'assigns user' do
-            # expect_assigned_user
-          # end
+          it 'redirects_to root_url' do
+            expect_redirects_to_root
+          end
+        end
 
-          # it 'has success status' do
-            # expect(response).to have_http_status(:success)
-          # end
-        # end
-      # end
-    # end
+        describe 'when activated & authorized user' do
+          it 'assigns user' do
+            expect_assigned_user
+          end
+
+          it 'has success status' do
+            expect(response).to have_http_status(:success)
+          end
+        end
+      end
+    end
   end
 end

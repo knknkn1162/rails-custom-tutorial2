@@ -1,4 +1,6 @@
 class PasswordResetsController < ApplicationController
+  before_action :get_user_with_validation, only: %i[edit update]
+
   def new
   end
 
@@ -20,4 +22,18 @@ class PasswordResetsController < ApplicationController
     end
   end
 
+  def update
+  end
+
+  private
+  def get_user
+    @user = User.find_by(email: params[:email])
+  end
+
+  def get_user_with_validation
+    get_user
+    unless (@user&.activated? && @user&.authenticated?(:reset, params[:id]))
+      redirect_to root_url
+    end
+  end
 end
