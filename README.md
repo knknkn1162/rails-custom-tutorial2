@@ -198,6 +198,14 @@ Q. when to test in feature spec?
 
 ---
 
+Q. how to test private method in controller? Currently, I tested along with before_filter.
+
+---
+
+Q. What kind of test should be checked? (Both normal and abnormal scenario?)
+
+---
+
 Q. how to deal with cookies in Helper module? (rspec guide shows that cookies should be used only in contoller spec, but railstutorial use it in helper module:( )
 
 ---
