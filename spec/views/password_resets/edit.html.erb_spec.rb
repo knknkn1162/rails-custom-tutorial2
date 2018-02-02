@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'password_resets/edit.html.erb', type: :view do
   before(:each) do
-    assign(:user, build(:user))
-    assign(:token_id, 'sample_token')
+    assign(:user, build(:user, reset_token: 'sample_token'))
   end
   it 'displays title' do
     render template: 'password_resets/edit', layout: 'layouts/application'
