@@ -1,6 +1,17 @@
 require 'rails_helper'
 
 RSpec.describe PasswordResetsController, type: :controller do
+  include UsersHelper
+  let(:get_user_with_validation_ok) do
+    allow(controller).to receive(:get_user_with_validation).and_return(true)
+  end
+  let(:user) { create(:user, reset_digest: generate_digest(sample_token)) }
+  let(:ignore_before_filter) do
+    get_user_with_validation_ok
+  end
+
+  #default
+  let(:sample_token) { 'sample_token' }
 
   describe 'GET #new' do
     it 'returns http success' do
@@ -10,7 +21,6 @@ RSpec.describe PasswordResetsController, type: :controller do
   end
 
   describe 'POST #create' do
-    let(:user) { create(:user) }
     let(:post_create) do
       post :create, params: { password_reset: {
         email: user_email
@@ -70,10 +80,160 @@ RSpec.describe PasswordResetsController, type: :controller do
     end
   end
 
-  # describe 'GET #edit' do
-    # it 'returns http success' do
-      # get :edit
-      # expect(response).to have_http_status(:success)
+  describe 'GET #edit' do
+    before(:each) do
+      ignore_before_filter
+      get :edit, params: { id: 'sample_token', email: user.email }
+    end
+
+    it 'returns http success' do
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'assigns user id & token' do
+      assigned_user = assigns(:user)
+      expect(assigned_user.id).to eq user.id
+      expect(
+        BCrypt::Password.new(user.reset_digest)
+      ).to eq assigned_user.reset_token
+    end
+  end
+
+  describe 'check before_filter method' do
+    controller do
+      def update
+      end
+
+      def edit
+      end
+    end
+
+    # describe 'when get_user_with_validation calls' do
+      # let(:stubbed_activated) do
+        # allow_any_instance_of(User).to receive(:activated?).and_return(activated_flag)
+      # end
+      # let(:stubbed_authenticated) do
+        # allow_any_instance_of(User).to receive(:authenticated?).and_return(authticated_flag)
+      # # action
+      # before(:each) do
+        # stubbed_activated
+        # stubbed_authenticated
+        # action
+      # end
+
+      # # default
+      # let(:email_flag) { user.email }
+      # let(:assigned_user) { assigns(:user) }
+      # let(:activated_flag) { true }
+      # let(:authenticated_flag) { true }
+
+      # # expectations
+      # let(:expect_assigned_user) do
+        # expect(assigned_user).to eq user
+      # end
+
+      # let(:expect_redirects_to_root) do
+        # expect(response).to have_http_status(:redirect)
+        # expect(response).to redirect_to('/')
+      # end
+
+      # describe 'when GET #edit' do
+        # let(:action) do
+          # get :edit, params: { id: user.reset_token, email: email_flag }, session: {}
+        # end
+
+        # describe 'when invalid email' do
+          # let(:email_flag) { 'dummy@gmail.com' }
+          # it 'doesnt assign user' do
+            # expect(assigned_user).not_to be
+          # end
+
+          # it 'redirects to root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when un-activated user' do
+          # let(:activated_flag) { false }
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'redirects_to_root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when unauthorized user' do
+          # let(:authenticated_flag) { false }
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'redirects_to root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when activated & authorized user' do
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'has success status' do
+            # expect(response).to have_http_status(:success)
+          # end
+        # end
+      # end
+
+      # describe 'when PATCH #update' do
+        # let(:action) do
+          # patch :update, params: { id: user.reset_token, email: email_flag }, session: {}
+        # end
+
+        # describe 'when invalid email' do
+          # let(:email_flag) { 'dummy@gmail.com' }
+          # it 'doesnt assign user' do
+            # expect(assigned_user).not_to be
+          # end
+
+          # it 'redirects to root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when un-activated user' do
+          # let(:activated_flag) { false }
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'redirects_to_root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when unauthorized user' do
+          # let(:authenticated_flag) { false }
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'redirects_to root_url' do
+            # expect_redirects_to_root
+          # end
+        # end
+
+        # describe 'when activated & authorized user' do
+          # it 'assigns user' do
+            # expect_assigned_user
+          # end
+
+          # it 'has success status' do
+            # expect(response).to have_http_status(:success)
+          # end
+        # end
+      # end
     # end
-  # end
+  end
 end

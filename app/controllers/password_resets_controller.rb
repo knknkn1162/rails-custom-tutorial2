@@ -3,6 +3,8 @@ class PasswordResetsController < ApplicationController
   end
 
   def edit
+    get_user unless @user
+    @user.reset_token = params[:id]
   end
 
   def create
