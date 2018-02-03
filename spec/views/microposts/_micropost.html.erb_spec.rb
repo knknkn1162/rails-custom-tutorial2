@@ -19,6 +19,6 @@ RSpec.describe "microposts/_micropost", type: :view do
   end
 
   it 'renders timestamp' do
-    expect(rendered).to have_content("Posted #{micropost.created_at} ago.")
+    expect(rendered).to match /Posted .* ago./
   end
 end
