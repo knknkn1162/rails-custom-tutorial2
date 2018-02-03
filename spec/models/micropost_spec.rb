@@ -1,14 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Micropost, type: :model do
+  let(:user) { create(:user) }
   describe 'when validation check' do
     let(:micropost) do
-      build(:micropost, content: content, user_id: user_id )
+      build(:micropost, content: content, user: user)
     end
 
-    let(:user) { create(:user) }
     # default
-    let(:user_id) { user.id }
     let(:content) { attributes_for(:micropost)[:content] }
 
     it 'should be valid' do
@@ -17,7 +16,7 @@ RSpec.describe Micropost, type: :model do
 
     context 'when invalid name contains' do
       describe 'when should have non-empty user ' do
-        let(:user_id) { nil }
+        let(:user) { nil }
         it 'should have non-empty user' do
           expect(micropost).not_to be_valid
         end
@@ -36,6 +35,19 @@ RSpec.describe Micropost, type: :model do
           expect(micropost).not_to be_valid
         end
       end
+    end
+  end
+
+  describe 'order by created_at descendingly' do
+    let(:micropost_most_recent) { create(:micropost, user: user) }
+    before(:each) do
+      create_list(:micropost, 5, user: user, created_at: 3.hours.ago)
+      micropost_most_recent
+      create(:micropost, user: user, created_at: 2.hours.ago)
+    end
+
+    it 'order should be most recent first' do
+      expect(Micropost.first).to eq micropost_most_recent
     end
   end
 end

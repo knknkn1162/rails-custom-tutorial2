@@ -1,6 +1,6 @@
 class User < ApplicationRecord
   include UsersHelper
-  has_many :microposts
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   # calls when create or update
   before_save :downcase_email
