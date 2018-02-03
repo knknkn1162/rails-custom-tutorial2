@@ -71,6 +71,14 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe 'when association check' do
+    let!(:user) { create(:user_with_microposts) }
+    it 'delete with post' do
+      cnt = user.microposts.count
+      expect { user.destroy }.to change(Micropost, :count).by(-cnt)
+    end
+  end
+
   describe 'when public method calls' do
     include UsersHelper
     it 'tests remember method' do
