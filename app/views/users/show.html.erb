@@ -17,6 +17,8 @@
 
       <%# NOTE: user_path requires id hash, whereas users_path doesn't %>
       <%# So, we need params option for testing will_paginate render in view spec. %>
+      <%# Don't be confused that Controller spec succeeds whether params option or not. %>
+      <%# That is because the request `GET :show` requires id hash before actual rendering. %>
       <%# See also controllers/users_controller.rb! %>
       <%= will_paginate @microposts, params: { id: @user.id } %>
     <% end %>
