@@ -104,6 +104,10 @@ To use MySQL in production, install `mysql2` gem in the production and then foll
 
 see `config/database.yml`!
 
+### Circle CI
+
++ To reproduce circle CI environment locally, see https://circleci.com/docs/2.0/local-jobs/.
+
 ## development
 
 ### model
