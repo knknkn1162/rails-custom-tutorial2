@@ -26,11 +26,11 @@ RSpec.describe 'static_pages/home.html.erb', type: :view do
   describe 'when logged in' do
     let(:logged_in_flag) { true }
     let(:stubbed_current_user) do
+      stubbed_logged_in
       allow(view).to receive(:current_user).and_return(create(:user))
     end
 
     before(:each) do
-      stubbed_logged_in
       stubbed_current_user
       assign(:micropost, Micropost.new)
       render
