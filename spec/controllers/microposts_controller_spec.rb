@@ -54,4 +54,63 @@ RSpec.describe MicropostsController, type: :controller do
       end
     end
   end
+
+  describe 'check before_action method' do
+    controller do
+      def create
+      end
+
+      def destroy
+      end
+    end
+
+    let(:stubbed_logged_in?) do
+      allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
+    end
+
+    describe 'when logged_in_user' do
+      before(:each) do
+        stubbed_logged_in?
+        action
+      end
+
+      describe 'when #create' do
+        let(:action) do
+          post :create, params: {}, session: {}
+        end
+        let(:logged_in_flag) { false }
+        it 'flash before #update if login fails' do
+          expect(flash[:danger]).to be
+        end
+
+        it 'stored forwarding_url in session' do
+          expect(session[:forwarding_url]).to eq root_url + 'microposts'
+        end
+
+        it 'redirects login path if login fails' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+      end
+
+      describe 'when #destroy' do
+        let(:action) do
+          delete :destroy, params: { id: 0 }
+        end
+        let(:logged_in_flag) { false }
+        it 'flash before #update if login fails' do
+          expect(flash[:danger]).to be
+        end
+
+        it 'stored forwarding_url in session' do
+          expect(session[:forwarding_url]).to eq root_url + 'microposts/0'
+        end
+
+        it 'redirects login path if login fails' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/login')
+        end
+      end
+    end
+  end
 end
