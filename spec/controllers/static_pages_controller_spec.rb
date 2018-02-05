@@ -27,7 +27,6 @@ RSpec.describe StaticPagesController, type: :controller do
 
     describe 'when logged_in' do
       let(:logged_in_flag) { true }
-
       it 'assigns micropost' do
         expect(assigns(:micropost)).to be
       end
