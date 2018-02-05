@@ -8,6 +8,10 @@ RSpec.describe 'static_pages/home.html.erb', type: :view do
   # default
   let(:logged_in_flag) { false }
   describe 'when not logged in' do
+    before(:each) do
+      stubbed_logged_in
+    end
+
     it 'displays title' do
       render template: 'static_pages/home', layout: 'layouts/application'
       expect(rendered).to have_title full_title('Home')
@@ -16,6 +20,23 @@ RSpec.describe 'static_pages/home.html.erb', type: :view do
     it 'displays sign up now' do
       render
       expect(rendered).to have_link href: '/signup'
+    end
+  end
+
+  describe 'when logged in' do
+    let(:logged_in_flag) { true }
+    let(:stubbed_current_user) do
+      allow(view).to receive(:current_user).and_return(create(:user))
+    end
+
+    before(:each) do
+      stubbed_logged_in
+      stubbed_current_user
+      assign(:micropost, Micropost.new)
+      render
+    end
+    it 'renders _log_in_home' do
+      expect(rendered).to render_template('static_pages/_login_home')
     end
   end
 end
