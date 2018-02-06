@@ -52,6 +52,11 @@ RSpec.describe MicropostsController, type: :controller do
         expect(response).to have_http_status(:success)
         expect(response).to render_template('static_pages/home')
       end
+
+      it 'renders empty feed_items' do
+        action
+        expect(assigns(:feed_items)).to be_empty
+      end
     end
   end
 
