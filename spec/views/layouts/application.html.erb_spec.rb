@@ -14,7 +14,7 @@ RSpec.describe 'layouts/application', type: :view do
     let(:page_title) { 'Sample' }
     let(:inline) { "<% provide(:title, '#{page_title}') %>" }
     it 'displays title' do
-      expect(rendered).to have_title /#{page_title}/
+      expect(rendered).to have_title(/#{page_title}/)
     end
   end
 
@@ -23,6 +23,11 @@ RSpec.describe 'layouts/application', type: :view do
     let(:store_flashes) do
       flash[:test1] = sentences[0]
       flash[:test2] = sentences[1]
+    end
+
+    it 'renders partials' do
+      expect(rendered).to render_template('layouts/_footer')
+      expect(rendered).to render_template('layouts/_header')
     end
 
     it 'displays flashes' do
