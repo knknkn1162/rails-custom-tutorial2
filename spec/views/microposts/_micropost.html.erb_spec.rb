@@ -9,6 +9,7 @@ RSpec.describe "microposts/_micropost", type: :view do
   end
 
   before(:each) do
+    stubbed_current_user
     render 'microposts/micropost', micropost: micropost
   end
   it 'renders li' do
