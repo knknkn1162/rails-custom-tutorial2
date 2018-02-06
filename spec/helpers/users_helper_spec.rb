@@ -22,18 +22,4 @@ RSpec.describe UsersHelper, type: :helper do
       expect(u).to eq user
     end
   end
-
-  describe 'current_user? test' do
-    it 'should be true' do
-      current_my_user
-      expect(helper.current_user?(user)).to be_truthy
-    end
-  end
-
-  describe 'admin_current_user? test' do
-    it 'should be true' do
-      current_my_user
-      expect(helper.admin_current_user?).to be_truthy
-    end
-  end
 end

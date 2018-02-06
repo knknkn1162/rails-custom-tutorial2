@@ -34,14 +34,6 @@ module UsersHelper
     end
   end
 
-  def current_user?(user)
-    user == current_user
-  end
-
-  def admin_current_user?
-    current_user.admin?
-  end
-
   # REVIEW: how to test the method dependent on current_user?
   def logged_in?
     !current_user.nil?
