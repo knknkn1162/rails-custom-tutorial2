@@ -22,7 +22,7 @@ RSpec.describe 'static_pages/home.html.erb', type: :view do
     end
 
     it 'displays title' do
-      expect(rendered).to have_title /Home/
+      expect(rendered).to have_title(/Home/)
     end
 
     it 'displays sign up now' do
