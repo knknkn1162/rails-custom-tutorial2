@@ -1,13 +1,23 @@
 require 'rails_helper'
 
-RSpec.describe "static_pages/contact", type: :view do
-  it 'displays title' do
-    render template: 'static_pages/contact', layout: 'layouts/application'
-    expect(rendered).to have_title full_title('Contact')
+RSpec.describe 'static_pages/contact', type: :view do
+  before(:each) do
+    render template: 'static_pages/contact', layout: layout
   end
 
-  it 'displays contact_page' do
-    render
-    expect(rendered).to have_link href: 'https://railstutorial.jp/contact'
+  # default
+  let(:layout) { false }
+
+  context 'renders with layout' do
+    let(:layout) { 'layouts/application' }
+    it 'renders correct title' do
+      expect(rendered).to have_title(/Contact/)
+    end
+  end
+
+  context 'renders no layouts' do
+    it 'displays contact_page' do
+      expect(rendered).to have_link href: /contact/
+    end
   end
 end
