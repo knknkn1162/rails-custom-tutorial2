@@ -71,6 +71,14 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe 'when association check' do
+    let!(:user) { create(:user_with_microposts) }
+    it 'delete with post' do
+      cnt = user.microposts.count
+      expect { user.destroy }.to change(Micropost, :count).by(-cnt)
+    end
+  end
+
   describe 'when public method calls' do
     include UsersHelper
     it 'tests remember method' do
@@ -157,6 +165,19 @@ RSpec.describe User, type: :model do
       it 'expired (true)' do
         user = create(:user, reset_sent_at: 3.hours.ago)
         expect(user.password_reset_expired?).to be_truthy
+      end
+    end
+
+    context 'when feed method' do
+      let(:generate_dummy_microposts) do
+        create(:other) do |other|
+          create_list(:micropost, 10, user: other)
+        end
+      end
+      it 'feeds correctly' do
+        user = create(:user_with_microposts, microposts_count: 5)
+        generate_dummy_microposts
+        expect(user.feed).to eq user.microposts
       end
     end
   end

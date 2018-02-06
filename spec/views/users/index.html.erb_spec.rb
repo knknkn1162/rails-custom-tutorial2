@@ -42,20 +42,20 @@ RSpec.describe 'users/index', type: :view do
   end
 
   describe 'when pagination renders' do
-    before do
+    let(:users) { User.paginate(page: 1, per_page: 20) }
+    before(:each) do
       stubbed_current_user
       # NOTE: default users per-page is 30
-      assign(:users, User.paginate(page: 1, per_page: 20))
+      assign(:users, users)
+      render
     end
 
     it 'displays pagination' do
-      render
       expect(rendered).to have_selector('div.pagination', count: 2)
     end
 
     describe 'users/_user', type: :view do
       it 'renders list of 20, users' do
-        render
         expect(rendered).to have_selector('ul.users li', count: 20)
         expect(rendered).to have_selector('ul.users a', count: 20)
       end

@@ -88,9 +88,10 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe 'GET #show' do
+    let(:user) { create(:user_with_microposts, microposts_count: 31) }
     before do
       ignore_before_action
-      get :show, params: { id: user.id }, session: {}
+      get :show, params: { id: user.id, page: 1 }, session: {}
     end
 
     it 'returns http success' do
@@ -99,6 +100,10 @@ RSpec.describe UsersController, type: :controller do
 
     it 'assigns @user' do
       expect(assigns(:user)).to eq user
+    end
+
+    it 'assigns @microposts' do
+      expect(assigns(:microposts)).to eq user.microposts[0..29]
     end
 
     describe 'when un-activated user' do
