@@ -6,6 +6,9 @@ module UsersHelper
   end
 
   def generate_digest(string, cost: cost)
+    if cost.nil?
+      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST : BCrypt::Engine.cost
+    end
     BCrypt::Password.create(string, cost: cost)
   end
 
