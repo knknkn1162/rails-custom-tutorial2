@@ -1,7 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe 'shared/_user_info', type: :view do
-  let(:microposts_count) { 5 }
+  before(:each) do
+    stubbed_current_user
+    render 'shared/user_info'
+  end
+
   let(:user) do
     create(:user_with_microposts, microposts_count: microposts_count)
   end
@@ -9,10 +13,9 @@ RSpec.describe 'shared/_user_info', type: :view do
   let(:stubbed_current_user) do
     allow(view).to receive(:current_user).and_return(user)
   end
-  before(:each) do
-    stubbed_current_user
-    render 'shared/user_info'
-  end
+
+  # default
+  let(:microposts_count) { 5 }
 
   it 'has gravatar link' do
     expect(rendered).to have_link(href: "/users/#{user.id}", count: 2)
