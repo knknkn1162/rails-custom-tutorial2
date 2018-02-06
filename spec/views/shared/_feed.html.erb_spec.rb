@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe 'shared/_feed', type: :view do
   let(:user) do
-    create(:user_with_microposts, microposts_count: 6)
+    create(:user_with_microposts, microposts_count: per_page + 1)
   end
 
   before(:each) do

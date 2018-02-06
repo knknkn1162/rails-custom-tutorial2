@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe "microposts/_micropost", type: :view do
+RSpec.describe 'microposts/_micropost', type: :view do
   let(:user) { create(:user) }
   let(:micropost) { create(:micropost, user: user) }
 
@@ -25,7 +25,7 @@ RSpec.describe "microposts/_micropost", type: :view do
   end
 
   it 'renders timestamp' do
-    expect(rendered).to match /Posted .* ago./
+    expect(rendered).to match(/Posted .* ago./)
   end
 
   it 'renders delete link' do
