@@ -7,7 +7,9 @@ RSpec.describe StaticPagesController, type: :controller do
       allow(controller).to receive(:current_user).and_return(user)
     end
 
-    let(:user) { create(:user) }
+    let(:user) do
+      create(:user_with_microposts, microposts_count: 31)
+    end
 
     before(:each) do
       stubbed_current_user
@@ -29,6 +31,10 @@ RSpec.describe StaticPagesController, type: :controller do
       let(:logged_in_flag) { true }
       it 'assigns micropost' do
         expect(assigns(:micropost)).to be
+      end
+
+      it 'assigns feed_items' do
+        expect(assigns(:feed_items)).to eq user.microposts[0..29]
       end
     end
   end
