@@ -167,6 +167,19 @@ RSpec.describe User, type: :model do
         expect(user.password_reset_expired?).to be_truthy
       end
     end
+
+    context 'when feed method' do
+      let(:generate_dummy_microposts) do
+        create(:other) do |other|
+          create_list(:micropost, 10, user: other)
+        end
+      end
+      it 'feeds correctly' do
+        user = create(:user_with_microposts, microposts_count: 5)
+        generate_dummy_microposts
+        expect(user.feed).to eq user.microposts
+      end
+    end
   end
 
   describe 'when private method calls' do
