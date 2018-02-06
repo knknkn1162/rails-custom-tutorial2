@@ -25,14 +25,29 @@ RSpec.describe 'static_pages/home.html.erb', type: :view do
 
   describe 'when logged in' do
     let(:logged_in_flag) { true }
+    let(:user) do
+      create(:user_with_microposts, microposts_count: 6)
+    end
+
     let(:stubbed_current_user) do
       stubbed_logged_in
-      allow(view).to receive(:current_user).and_return(create(:user))
+      allow(view).to receive(:current_user).and_return(user)
+    end
+
+    # instance variable injection
+    let(:inject_feed_items) do
+      assign(:feed_items, user.microposts.paginate(page: 1, per_page: 5))
+    end
+
+    let(:inject_micropost) do
+      assign(:micropost, Micropost.new)
     end
 
     before(:each) do
+      inject_feed_items
+      inject_micropost
       stubbed_current_user
-      assign(:micropost, Micropost.new)
+      stubbed_logged_in
       render
     end
     it 'renders _log_in_home' do
