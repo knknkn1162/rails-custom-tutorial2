@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe 'shared/_micropost_form', type: :view do
+  let(:inject_micropost) { assign(:micropost, Micropost.new) }
   before(:each) do
-    assign(:micropost, Micropost.new)
+    inject_micropost
     render 'shared/micropost_form'
   end
 
