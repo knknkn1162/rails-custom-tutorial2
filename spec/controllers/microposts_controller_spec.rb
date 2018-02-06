@@ -60,6 +60,56 @@ RSpec.describe MicropostsController, type: :controller do
     end
   end
 
+  describe 'DELETE #destroy' do
+    let(:stubbed_current_user) do
+      allow(controller).to receive(:current_user).and_return(user)
+    end
+    let(:user) do
+      create(:user_with_microposts, microposts_count: 5)
+    end
+    let(:action) do
+      delete :destroy, params: { id: micropost_id }
+    end
+
+    before(:each) do
+      stubbed_current_user
+      logged_in_user_ok
+    end
+
+    # default
+    let(:micropost_id) { user.microposts[0] }
+
+    describe 'when no microposts' do
+      let(:micropost_id) { -1 }
+      it 'redirects to root_url' do
+        action
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
+
+      it 'doesnt delete microposts' do
+        expect { action }.to change(Micropost, :count).by(0)
+      end
+    end
+
+    describe 'when micropost exist' do
+      it 'redirect_to root_url' do
+        action
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
+
+      it 'flashes success' do
+        action
+        expect(flash).not_to be_empty
+      end
+
+      it 'delete micropost' do
+        expect { action }.to change(Micropost, :count).by(-1)
+      end
+    end
+  end
+
   describe 'check before_action method' do
     controller do
       def create
