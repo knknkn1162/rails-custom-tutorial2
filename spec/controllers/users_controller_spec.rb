@@ -1,437 +1,418 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let(:user) { create(:user) }
-  let(:other) { create(:other) }
+  before(:each) do
+    stubbed_before_actions
+  end
 
-  let(:logged_in_user_ok) do
+  let(:stubbed_logged_in_user) do
     # NOTE: The expression `controller.stub(:current_user).and_return(user)` occurs `Deprecation Warnings:`.
-    allow(controller).to receive(:logged_in_user).and_return(true)
+    allow(controller).to receive(:logged_in_user).and_return(logged_in_user_flag)
   end
 
-  let(:correct_user_ok) do
-    allow(controller).to receive(:correct_user).and_return(true)
+  let(:stubbed_correct_user) do
+    allow(controller).to receive(:correct_user).and_return(correct_user_flag)
   end
 
-  let(:admin_user_ok) do
-    allow(controller).to receive(:admin_user).and_return(true)
+  let(:stubbed_admin_user) do
+    allow(controller).to receive(:admin_user).and_return(admin_user_flag)
   end
 
-  let(:ignore_before_action) do
-    logged_in_user_ok
-    correct_user_ok
-    admin_user_ok
+  let(:stubbed_before_actions) do
+    stubbed_logged_in_user
+    stubbed_correct_user
+    stubbed_admin_user
   end
 
-  describe 'when #index' do
-    describe 'when pagination doesnt exist' do
-      let(:users) do
-        create_list(:other, 5, activated: activated_flag)
-      end
-      let(:activated_flag) { true }
-      before(:each) do
-        ignore_before_action
-        get :index, params: {}, session: {}
-      end
+  # default
+  let(:logged_in_user_flag) { true }
+  let(:correct_user_flag) { true }
+  let(:admin_user_flag) { true }
 
-      it 'has a 200 status code' do
-        expect(response).to have_http_status(:success)
-      end
+  describe 'GET #index' do
+    before { users }
+    let(:users) do
+      create_list(:other, users_count, activated: activated_flag)
+    end
 
+    let(:action) do
+      get :index, params: params, session: {}
+    end
+
+    # default
+    let(:users_count) { 5 }
+    let(:activated_flag) { true }
+    let(:params) { {} }
+
+    context 'when pagination doesnt exist' do
+      before(:each) { action }
       it 'assigns @users' do
         expect(assigns(:users)).to eq users
       end
 
       it 'renders the :index template' do
+        expect(response).to have_http_status(:success)
         expect(response).to render_template(:index)
       end
 
-      describe 'when all users un-activated' do
+      context 'when all users un-activated' do
         let(:activated_flag) { false }
-
+        before(:each) { action }
         it 'assigns @users' do
           expect(assigns(:users)).to be_empty
         end
       end
     end
 
-    describe 'when pagination exists' do
-      let!(:users) do
-        create_list(:other, 31)
-      end
-
-      before(:each) do
-        ignore_before_action
-        get :index, params: { page: 1 }, session: {}
-      end
-
+    context 'when pagination exists' do
+      let(:params) { { page: 1 } }
+      let(:user_count) { 31 }
+      before(:each) { action }
       it 'lists list of @users' do
-        assigned_users = assigns(:users)
-        expect(assigned_users.size).to eq 30
-        expect(assigned_users).to eq users[0..29]
-      end
-    end
-  end
-
-  describe 'GET #new' do
-    before(:each) do
-      get :new
-    end
-
-    it 'returns http success' do
-      expect(response).to have_http_status(:success)
-    end
-
-    it 'generate new user' do
-      expect(assigns(:user)).to be_a_new(User)
-    end
-  end
-
-  describe 'GET #show' do
-    let(:user) { create(:user_with_microposts, microposts_count: 31) }
-    before do
-      ignore_before_action
-      get :show, params: { id: user.id, page: 1 }, session: {}
-    end
-
-    it 'returns http success' do
-      expect(response).to have_http_status(:success)
-    end
-
-    it 'assigns @user' do
-      expect(assigns(:user)).to eq user
-    end
-
-    it 'assigns @microposts' do
-      expect(assigns(:microposts)).to eq user.microposts[0..29]
-    end
-
-    describe 'when un-activated user' do
-      let(:user) { create(:user, activated: false) }
-      it 'returns http success' do
-        expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to('/')
-      end
-    end
-  end
-
-  describe 'POST #create' do
-    let(:user_attrs) { attributes_for(:user) }
-    before(:each) do
-      ignore_before_action
-    end
-
-    let(:post_create) do
-      post :create, params: { user: user_attrs }, session: {}
-    end
-
-    describe 'redirects the :create template if success' do
-      it 'saves new user' do
-        expect do
-          post_create
-        end.to change(User, :count).by(1)
-      end
-
-      it 'should get redirect status and redirect to show page' do
-        post_create
-        # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
-        expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to('/')
-      end
-
-      it 'should flash correctly' do
-        post_create
-        expect(flash).not_to be_empty
+        expect(assigns(:users)).to eq users[0..29]
       end
     end
 
-    describe 're-renders the :new template if failure' do
-      let(:post_create) do
-        post :create, params: { user: attributes_for(:user, name: ' ') }
-      end
-
-      it 'renders new page' do
-        post_create
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template('users/new')
-      end
-
-      it 'doesnt flash' do
-        expect(flash).to be_empty
-      end
-    end
-  end
-
-  describe 'GET #edit' do
-    before(:each) do
-      ignore_before_action
-      get :edit, params: { id: user.id }, session: {}
-    end
-
-    it 'returns http success' do
-      expect(response).to have_http_status(:success)
-    end
-
-    it 'assigns @user' do
-      expect(assigns(:user)).to eq user
-    end
-  end
-
-  describe 'PATCH #update' do
-    let!(:user) { create(:user) }
-    before(:each) do
-      ignore_before_action
-    end
-
-    let(:post_create) do
-      patch :update, params: { user: other_attrs, id: user.id }, session: {}
-    end
-
-    describe 'when security check' do
-      it 'should not allow the admin attr to be edited' do
-        # forced to change admin user with patch update
-        patch :update,
-          params: {
-            user: {
-              admin: true
-            },
-            id: other.id
-          },
-          session: {}
-        expect(other.reload.admin?).to be_falsy
-      end
-    end
-
-    describe 'when success' do
-      let!(:other_attrs) { attributes_for(:other) }
-      it 'saves updated users' do
-        expect do
-          post_create
-        end.to change(User, :count).by(0)
-      end
-
-      it 'updates users if success' do
-        post_create
-        user.reload
-
-        expect(user.name).to eq other_attrs[:name]
-        expect(user.email).to eq other_attrs[:email]
-      end
-
-      it 'redirects to :show' do
-        post_create
-        user = User.last
-        expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to("/users/#{user.id}")
-      end
-
-      it 'flashes' do
-        post_create
-        expect(flash).not_to be_empty
-      end
-
-      describe 'when updated with empty password' do
-        let(:other_attrs) do
-          attributes_for(
-            :other,
-            password: '',
-            password_confirmation: ''
-          )
-        end
-
-        it 'redirects to :show' do
-          post_create
-          user = User.last
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to("/users/#{user.id}")
-        end
-      end
-    end
-
-    describe 'when failure' do
-      let!(:other_attrs) { attributes_for(:other, name: ' ') }
-      it 'saves updated users' do
-        expect do
-          post_create
-        end.to change(User, :count).by(0)
-      end
-
-      it 'redirects to :show' do
-        post_create
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template('users/edit')
-      end
-    end
-  end
-
-  describe 'when #destroy' do
-    before(:each) do
-      ignore_before_action
-    end
-
-    let!(:user) { create(:user) }
-    let(:delete_destroy) do
-      delete :destroy, params: { id: user.id }, session: {}
-    end
-
-    it 'delete the user' do
-      expect do
-        delete_destroy
-      end.to change(User, :count).by(-1)
-    end
-
-    it 'redirects the :show template' do
-      delete_destroy
-      expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to('/users')
-    end
-
-    it 'flashes' do
-      delete_destroy
-      expect(flash).not_to be_empty
-    end
-  end
-
-  # REVIEW: Should the method under before_filter be tested a lot?
-  describe 'check before_action method' do
-    controller do
-      def update
-      end
-
-      def edit
-      end
-
-      def index
-      end
-
-      def destroy
-      end
-    end
-
-    let(:stubbed_logged_in?) do
-      allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
-    end
-
-    let(:stubbed_current_user) do
-      allow(controller).to receive(:current_user).and_return(current_user_flag)
-    end
-
-    describe 'when logged_in_user calls' do
-      let!(:logged_in_flag) { false }
-      before(:each) do
-        stubbed_logged_in?
-        correct_user_ok
-        admin_user_ok
+    context 'when logged_in_user calls' do
+      it 'calls' do
+        expect(controller).to receive(:logged_in_user)
         action
-      end
-
-      describe 'when #destroy' do
-        let(:action) do
-          delete :destroy, params: { id: user.id }, session: {}
-        end
-        it 'flash before #update if login fails' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'stored forwarding_url in session' do
-          expect(session[:forwarding_url]).to eq user_url(user)
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
-      end
-
-      describe 'when #index' do
-        let(:action) { get :index, params: {}, session: {} }
-        it 'flash before #update if login fails' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'stored forwarding_url in session' do
-          expect(session[:forwarding_url]).to eq users_url
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
-      end
-
-      describe 'when #update' do
-        let(:action) { patch :update, params: { id: 0 }, session: {} }
-
-        it 'flash before #update if login fails' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'stored forwarding_url in session' do
-          expect(session[:forwarding_url]).to eq user_url(build(:user, id: 0))
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
-      end
-
-      describe 'when #edit' do
-        let(:action) { get :edit, params: { id: 0 }, session: {} }
-        it 'flash before #update if success login' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
-      end
-    end
-
-    describe 'when correct_user calls' do
-      # assume that current_user is differnt from user with params[:id]
-      let!(:current_user_flag) { other }
-      before(:each) do
-        stubbed_current_user
-        logged_in_user_ok
-        admin_user_ok
-        action
-      end
-
-      describe 'when #edit' do
-        let(:action) { get :edit, params: { id: user.id }, session: {} }
-        it 'redirects root path if current_user is other' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/')
-        end
-      end
-
-      describe 'when #update' do
-        let(:action) { patch :update, params: { id: user.id }, session: {} }
-        it 'redirects root path if current_user is other' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/')
-        end
-      end
-    end
-
-    describe 'when admin_user calls' do
-      let!(:current_user_flag) { other }
-      before(:each) do
-        stubbed_current_user
-        logged_in_user_ok
-        correct_user_ok
-        action
-      end
-
-      describe 'when #destroy' do
-        let(:action) { delete :destroy, params: { id: 0 }, session: {} }
-        it 'redirects root path if current_user is other' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/')
-        end
       end
     end
   end
 end
+  # describe 'GET #new' do
+    # let(:action) { get :new }
+    # before { action }
+    # it 'returns http success' do
+      # expect(response).to have_http_status(:success)
+    # end
+
+    # it 'generate new user' do
+      # expect(assigns(:user)).to be_a_new(User)
+    # end
+  # end
+
+  # describe 'GET #show' do
+    # before { action }
+
+    # let(:user) { create(:user_with_microposts, microposts_count: 31, activated: activated_flag) }
+    # let(:action) do
+      # get :show, params: { id: user.id, page: 1 }, session: {}
+    # end
+
+    # # default
+    # let(:activated_flag) { true }
+
+    # context 'when un-activated user' do
+      # let(:activated_flag) { false }
+      # it 'returns http success' do
+        # expect(response).to have_http_status(:redirect)
+        # expect(response).to redirect_to('/')
+      # end
+    # end
+
+    # context 'when activated user'
+      # it 'returns http success' do
+        # expect(response).to have_http_status(:success)
+      # end
+
+      # it 'assigns @user' do
+        # expect(assigns(:user)).to eq user
+      # end
+
+      # it 'assigns @microposts' do
+        # expect(assigns(:microposts)).to eq user.microposts[0..29]
+      # end
+    # end
+  # end
+
+  # describe 'POST #create' do
+    # let(:action) do
+      # post :create, params: { user: user_attrs }, session: {}
+    # end
+
+    # # default
+    # let(:user_attrs) { attributes_for(:user) }
+
+    # context 'when success' do
+      # it 'saves new user' do
+        # expect { action }.to change(User, :count).by(1)
+      # end
+
+      # it 'should get redirect status and redirect to show page' do
+        # action
+        # # see https://github.com/rack/rack/blob/master/lib/rack/utils.rb#L493-L553
+        # expect(response).to have_http_status(:redirect)
+        # expect(response).to redirect_to('/')
+      # end
+
+      # it 'should flash correctly' do
+        # action
+        # expect(flash).not_to be_empty
+      # end
+    # end
+
+    # context 'when failure' do
+      # let(:user_attrs) { attributes_for(:user, name: ' ') }
+      # before { action }
+      # it 'renders new page' do
+        # expect(response).to have_http_status(:success)
+        # expect(response).to render_template('users/new')
+      # end
+
+      # it 'doesnt flash' do
+        # expect(flash).to be_empty
+      # end
+    # end
+  # end
+
+  # describe 'GET #edit' do
+    # let(:action) do
+      # get :edit, params: { id: user.id }, session: {}
+    # end
+
+    # it 'returns http success' do
+      # action
+      # expect(response).to have_http_status(:success)
+    # end
+
+    # it 'assigns @user' do
+      # action
+      # expect(assigns(:user)).to eq user
+    # end
+
+    # context 'when before_action method calls' do
+      # it 'calls logged_in_user & current_user' do
+        # expect(controller).to receive(:logged_in_user)
+        # expect(controller).to receive(:current_user)
+        # action
+      # end
+    # end
+  # end
+
+  # describe 'PATCH #update' do
+    # let(:user) { create(:user) }
+    # let(:action) do
+      # patch :update, params: { user: new_user_attrs, id: user_id }, session: {}
+    # end
+
+    # # default
+    # let(:user_id) { user.id }
+    # let(:new_user_attrs) { other_attrs }
+
+    # context 'when checks security' do
+      # # forced to change admin user with patch update
+      # let(:new_user_attrs) { { admin: true } }
+      # let(:user_id) { other.id }
+      # it 'should not allow the admin attr to be edited' do
+        # action
+        # expect(other.reload.admin?).to be_falsy
+      # end
+    # end
+
+    # context 'when success' do
+      # it 'saves updated users' do
+        # expect { action }.to change(User, :count).by(0)
+      # end
+
+      # it 'updates users if success' do
+        # action
+        # user.reload
+        # expect(user.name).to eq new_user_attrs[:name]
+        # expect(user.email).to eq new_users_attrs[:email]
+      # end
+
+      # it 'redirects to :show' do
+        # action
+        # user = User.last
+        # expect(response).to have_http_status(:redirect)
+        # expect(response).to redirect_to("/users/#{user.id}")
+      # end
+
+      # it 'flashes' do
+        # action
+        # expect(flash).not_to be_empty
+      # end
+
+      # context 'when updated with empty password' do
+        # let(:new_user_attrs) do
+          # attributes_for(:other, password: '', password_confirmation: '')
+        # end
+        # it 'redirects to :show' do
+          # action
+          # user = User.last
+          # expect(response).to have_http_status(:redirect)
+          # expect(response).to redirect_to("/users/#{user.id}")
+        # end
+
+        # it 'doesnt change password' do
+          # old_user_password = user.password
+          # action
+          # user.reload
+          # expect(user.password).not_to be
+          # expect(user.password).to eq old_user_password
+        # end
+      # end
+    # end
+
+    # context 'when failure' do
+      # let(:new_user_attrs) { attributes_for(:other, name: ' ') }
+      # it 'saves updated users' do
+        # expect { action }.to change(User, :count).by(0)
+      # end
+
+      # it 'redirects to :show' do
+        # action
+        # expect(response).to have_http_status(:success)
+        # expect(response).to render_template('users/edit')
+      # end
+    # end
+
+    # context 'when before_action method calls' do
+      # it 'calls logged_in_user & current_user' do
+        # expect(controller).to receive(:logged_in_user)
+        # expect(controller).to receive(:current_user)
+        # action
+      # end
+    # end
+  # end
+
+  # describe 'DELETE #destroy' do
+    # let(:user) { create(:user) }
+    # let(:action) do
+      # delete :destroy, params: { id: user.id }, session: {}
+    # end
+
+    # it 'delete the user' do
+      # expect { action }.to change(User, :count).by(-1)
+    # end
+
+    # it 'redirects the :show template' do
+      # action
+      # expect(response).to have_http_status(:redirect)
+      # expect(response).to redirect_to('/users')
+    # end
+
+    # it 'flashes' do
+      # action
+      # expect(flash).not_to be_empty
+    # end
+
+
+    # context 'when before_action method calls' do
+      # it 'calls logged_in_user & admin_user' do
+        # expect(controller).to receive(:logged_in_user)
+        # expect(controller).to receive(:admin_user)
+        # action
+      # end
+    # end
+  # end
+
+  # context 'when check before_action method' do
+    # controller do
+      # def update; end
+      # def destroy; end
+    # end
+
+    # let(:stubbed_current_user) do
+      # allow(controller).to receive(:current_user).and_return(current_user_flag)
+    # end
+    # let(:user) { create(:user) }
+    # let(:other) { create(:other) }
+
+    # context 'when logged_in_user calls' do
+      # let(:stubbed_logged_in?) do
+        # allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
+      # end
+      # let(:stubbed_logged_in_user) { false }
+      # let(:action) { patch :update, params: { id: id }, session: {} }
+      # before(:each) do
+        # stubbed_logged_in?
+      # end
+
+      # # default
+      # let(:logged_in_flag) { false }
+      # let(:id) { 0 }
+
+      # context 'when logged_in' do
+        # let(:logged_in_flag) { true }
+
+        # it 'calls #update' do
+          # expect(controller).to receive(:update)
+          # action
+        # end
+      # end
+
+      # context 'when not logged_in' do
+        # before(:each) { action }
+        # it 'flashes' do
+          # expect(flash[:danger]).to be
+        # end
+
+        # it 'stored forwarding_url in session' do
+          # expect(session[:forwarding_url]).to eq user_url(build(:user, id: id))
+        # end
+
+        # it 'redirects login path if login fails' do
+          # expect(response).to have_http_status(:redirect)
+          # expect(response).to redirect_to('/login')
+        # end
+      # end
+    # end
+
+    # context 'when correct_user calls' do
+      # let(:action) { patch :update, params: { id: user.id }, session: {} }
+      # let(:stubbed_correct_user) { false }
+      # before(:each) do
+        # stubbed_current_user
+      # end
+
+      # # default
+      # let(:current_user_flag) { user }
+
+      # context 'when current_user is other' do
+        # let(:current_user_flag) { other }
+        # before { action }
+        # it 'redirects root path if current_user is other' do
+          # expect(response).to have_http_status(:redirect)
+          # expect(response).to redirect_to('/')
+        # end
+      # end
+
+      # context 'when current_user is user' do
+        # it 'calls #update' do
+          # expect(controller).to receive(:update)
+          # action
+        # end
+      # end
+    # end
+
+    # context 'when admin_user calls' do
+      # before(:each) do
+        # stubbed_current_user
+      # end
+      # let(:action) { delete :destroy, params: { id: 0 }, session: {} }
+
+      # # default
+      # let(:current_user_flag) { other }
+      # let(:stubbed_admin_user) { false }
+
+      # context 'when current_user is non-admin-user' do
+        # let(:current_user_flag) { other }
+        # before { action }
+        # it 'redirects root path if current_user is other' do
+          # expect(response).to have_http_status(:redirect)
+          # expect(response).to redirect_to('/')
+        # end
+      # end
+
+      # context 'when current_user is admin user' do
+        # it 'calls #destroy' do
+          # expect(controller).to receive(:destroy)
+          # action
+        # end
+      # end
+    # end
+  # end
+# end
