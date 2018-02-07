@@ -198,7 +198,7 @@ web: bundle exec puma -C config/puma.rb
 
 ## Questions
 
-Q. when to test in feature spec?
+Q. when should be tested in feature spec? 
 
 ---
 
