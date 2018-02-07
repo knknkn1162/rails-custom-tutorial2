@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-
+  include UsersHelper
   describe 'when validation check' do
     context 'when invalid name contains' do
       it 'should be non-empty name' do
@@ -80,7 +80,6 @@ RSpec.describe User, type: :model do
   end
 
   describe 'when public method calls' do
-    include UsersHelper
     it 'tests remember method' do
       user = build(:user)
       user.remember
