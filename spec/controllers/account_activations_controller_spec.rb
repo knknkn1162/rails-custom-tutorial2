@@ -1,91 +1,71 @@
 require 'rails_helper'
 
 RSpec.describe AccountActivationsController, type: :controller do
+  before(:each) do
+    user
+    action
+  end
+
   describe 'GET #edit' do
     let(:user) do
-      create(:user, activated: false, activated_at: nil)
-    end
-
-    # REVIEW: cannot be authenticated? method stubbed?
-    # I tried to implement like `allow(user).to receive(:activated?)...` but it doesnt work!!
-    # Eventually, use `allow_any_instance_of` method instead..
-    let(:stubbed_activated?) do
-      # will allow you to stub or mock any instance of a class.
-      allow_any_instance_of(User).to receive(:activated?).and_return(activated_flag)
-    end
-
-    let(:stubbed_authenticated?) do
+      # REVIEW: how to mock user object? The allow_any_instance_of method is a bit stable thing..
       allow_any_instance_of(User).to receive(:authenticated?).and_return(authenticated_flag)
+      create(:user, activated: activated_flag, activated_at: nil)
     end
 
-    let(:get_edit) do
-      get :edit, params: { id: user.activation_token, email: user.email }, session: {}
+    let(:action) do
+      get :edit, params: { id: activation_token, email: email }, session: {}
     end
 
-    let(:expect_redirect_to_root) do
-      expect(response).to have_http_status(:redirect)
-      expect(response).to redirect_to('/')
-    end
+    # default
+    let(:activated_flag) { false } # unactivated
+    let(:authenticated_flag) { true }
+    let(:activation_token) { user.activation_token }
+    let(:email) { user.email }
 
-    let(:expect_flashes_danger) do
-      expect(flash[:danger]).to be
-    end
-
-    describe 'when user is not valid' do
-      before(:each) do
-        get :edit, params: { id: user.id, email: 'dummy' }, session: {}
-      end
-      it 'redirects to root_path when email is invalid' do
-        expect_redirect_to_root
+    context 'when invalid' do
+      # expectation
+      let(:expect_redirect_to_root) do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
       end
 
-      it 'flashes danger' do
-        expect_flashes_danger
-      end
-    end
-
-    describe 'when activated' do
-      let!(:activated_flag) { true }
-      before(:each) do
-        stubbed_activated?
-        get_edit
+      let(:expect_flashes_danger) do
+        expect(flash[:danger]).to be
       end
 
-      it 'redirects to root_path' do
-        expect_redirect_to_root
+      context 'when user is not valid' do
+        let(:email) { 'dummy' }
+        it 'redirects to root_path when email is invalid' do
+          expect_redirect_to_root
+        end
+        it 'flashes danger' do
+          expect_flashes_danger
+        end
       end
 
-      it 'flashes danger' do
-        expect_flashes_danger
-      end
-    end
-
-    describe 'when un-authenticated' do
-      let!(:authenticated_flag) { false }
-      before(:each) do
-        stubbed_authenticated?
-        get_edit
+      context 'when activated' do
+        let(:activated_flag) { true }
+        it 'redirects to root_path' do
+          expect_redirect_to_root
+        end
+        it 'flashes danger' do
+          expect_flashes_danger
+        end
       end
 
-      it 'redirects to root_path' do
-        expect_redirect_to_root
-      end
-
-      it 'flashes danger' do
-        expect_flashes_danger
+      context 'when un-authenticated' do
+        let(:authenticated_flag) { false }
+        it 'redirects to root_path' do
+          expect_redirect_to_root
+        end
+        it 'flashes danger' do
+          expect_flashes_danger
+        end
       end
     end
 
-    describe 'when user is unactivated yet & authorized' do
-      let!(:authenticated_flag) { true }
-      let!(:activated_flag) { false }
-
-      before(:each) do
-        #stubbed_activated?
-        #stubbed_authenticated?
-        get_edit
-      end
-
+    context 'when user is unactivated yet & authorized' do
       it 'redirects to :show' do
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to("/users/#{user.id}")
