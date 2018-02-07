@@ -151,6 +151,8 @@ official document) http://www.rubydoc.info/github/jnicklas/capybara/Capybara
 
 + http://morizyun.github.io/ruby/ > rspec > controllers test, requests test
 
++ http://www.betterspecs.org/  .. How to test better rspec.
+
 ## production
 
 ### heroku
