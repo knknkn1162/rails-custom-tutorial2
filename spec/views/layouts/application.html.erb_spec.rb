@@ -26,8 +26,9 @@ RSpec.describe 'layouts/application', type: :view do
     end
 
     it 'renders partials' do
-      expect(rendered).to render_template('layouts/_footer')
-      expect(rendered).to render_template('layouts/_header')
+      ['layouts/_footer', 'layouts/_header'].each do |template|
+        expect(rendered).to render_template(template)
+      end
     end
 
     it 'displays flashes' do
