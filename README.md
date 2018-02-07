@@ -223,3 +223,7 @@ A. The yield keyword motivates us to use blocks, whereas local variable to deal 
 Q. I often forgot to `do` keyword in rspec. For instance, I accidentally typed `it 'calls sth'` and returns, that should be `it 'calls sth' do`. Are there any linter to avoid this issue?
 
 ----
+
+Q. The command, especially the rspec command is too long. Currently, I make the shorter alias via Makefile. Is there the other way to type commands quickly?
+
+---
