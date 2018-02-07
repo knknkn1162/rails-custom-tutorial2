@@ -15,15 +15,15 @@ RSpec.describe 'layouts/_dropdown', type: :view do
     expect(rendered).to have_selector('ul.dropdown-menu')
     expect(rendered).to have_selector(
       "ul.dropdown-menu a[href='/users/#{user.id}']",
-      text: 'Profile'
+      text: /profile/i
     )
     expect(rendered).to have_selector(
       "ul.dropdown-menu a[href='/users/#{user.id}/edit']",
-      text: 'Settings'
+      text: /settings/i
     )
     expect(rendered).to have_selector(
       "ul.dropdown-menu a[href='/logout']",
-      text: 'Log out'
+      text: /log out/i
     )
   end
 end
