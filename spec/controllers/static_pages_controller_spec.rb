@@ -16,7 +16,7 @@ RSpec.describe StaticPagesController, type: :controller do
       get :home
     end
 
-    describe 'when not logged_in' do
+    context 'when not logged_in' do
       let(:logged_in_flag) { false }
       it 'returns http success' do
         expect(response).to have_http_status(:success)
@@ -27,7 +27,7 @@ RSpec.describe StaticPagesController, type: :controller do
       end
     end
 
-    describe 'when logged_in' do
+    context 'when logged_in' do
       let(:logged_in_flag) { true }
       it 'assigns micropost' do
         expect(assigns(:micropost)).to be
