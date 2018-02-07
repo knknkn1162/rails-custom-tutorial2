@@ -80,53 +80,53 @@ RSpec.describe UsersController, type: :controller do
       end
     end
   end
+
+  describe 'GET #new' do
+    let(:action) { get :new }
+    before { action }
+    it 'returns http success' do
+      expect(response).to have_http_status(:success)
+    end
+
+    it 'generate new user' do
+      expect(assigns(:user)).to be_a_new(User)
+    end
+  end
+
+  describe 'GET #show' do
+    before { action }
+
+    let(:user) { create(:user_with_microposts, microposts_count: 31, activated: activated_flag) }
+    let(:action) do
+      get :show, params: { id: user.id, page: 1 }, session: {}
+    end
+
+    # default
+    let(:activated_flag) { true }
+
+    context 'when un-activated user' do
+      let(:activated_flag) { false }
+      it 'returns http success' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/')
+      end
+    end
+
+    context 'when activated user' do
+      it 'returns http success' do
+        expect(response).to have_http_status(:success)
+      end
+
+      it 'assigns @user' do
+        expect(assigns(:user)).to eq user
+      end
+
+      it 'assigns @microposts' do
+        expect(assigns(:microposts)).to eq user.microposts[0..29]
+      end
+    end
+  end
 end
-  # describe 'GET #new' do
-    # let(:action) { get :new }
-    # before { action }
-    # it 'returns http success' do
-      # expect(response).to have_http_status(:success)
-    # end
-
-    # it 'generate new user' do
-      # expect(assigns(:user)).to be_a_new(User)
-    # end
-  # end
-
-  # describe 'GET #show' do
-    # before { action }
-
-    # let(:user) { create(:user_with_microposts, microposts_count: 31, activated: activated_flag) }
-    # let(:action) do
-      # get :show, params: { id: user.id, page: 1 }, session: {}
-    # end
-
-    # # default
-    # let(:activated_flag) { true }
-
-    # context 'when un-activated user' do
-      # let(:activated_flag) { false }
-      # it 'returns http success' do
-        # expect(response).to have_http_status(:redirect)
-        # expect(response).to redirect_to('/')
-      # end
-    # end
-
-    # context 'when activated user'
-      # it 'returns http success' do
-        # expect(response).to have_http_status(:success)
-      # end
-
-      # it 'assigns @user' do
-        # expect(assigns(:user)).to eq user
-      # end
-
-      # it 'assigns @microposts' do
-        # expect(assigns(:microposts)).to eq user.microposts[0..29]
-      # end
-    # end
-  # end
-
   # describe 'POST #create' do
     # let(:action) do
       # post :create, params: { user: user_attrs }, session: {}
