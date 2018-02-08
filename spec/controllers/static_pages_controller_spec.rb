@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe StaticPagesController, type: :controller do
   describe 'GET #home' do
-    let(:stubbed_current_user) do
+    let(:stubbed_logged_in) do
       allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
       allow(controller).to receive(:current_user).and_return(user)
     end
@@ -10,11 +10,15 @@ RSpec.describe StaticPagesController, type: :controller do
     let(:user) do
       create(:user_with_microposts, microposts_count: 31)
     end
+    let(:action) { get :home }
 
     before(:each) do
-      stubbed_current_user
-      get :home
+      stubbed_logged_in
+      action
     end
+
+    # default
+    let(:logged_in_flag) { true }
 
     context 'when not logged_in' do
       let(:logged_in_flag) { false }
@@ -28,7 +32,6 @@ RSpec.describe StaticPagesController, type: :controller do
     end
 
     context 'when logged_in' do
-      let(:logged_in_flag) { true }
       it 'assigns micropost' do
         expect(assigns(:micropost)).to be
       end
@@ -40,15 +43,19 @@ RSpec.describe StaticPagesController, type: :controller do
   end
 
   describe 'GET #help' do
+    let(:action) { get :help }
+    before(:each) { action }
+
     it 'returns http success' do
-      get :help
       expect(response).to have_http_status(:success)
     end
   end
 
   describe 'GET #about' do
+    let(:action) { get :about }
+    before(:each) { action }
+
     it 'returns about success' do
-      get :about
       expect(response).to have_http_status(:success)
     end
   end
