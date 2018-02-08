@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
-
   describe 'GET #new' do
+    let(:action) { get :new }
+    before(:each) { action }
     it 'returns http success' do
-      get :new
       expect(response).to have_http_status(:success)
     end
   end
@@ -13,7 +13,7 @@ RSpec.describe SessionsController, type: :controller do
     let(:user) do
       create(:user, activated: activated_flag)
     end
-    let(:post_create) do
+    let(:action) do
       post :create, params: { session: {
         email: user_email,
         password: user_password,
@@ -28,46 +28,44 @@ RSpec.describe SessionsController, type: :controller do
     let(:remember_me_flag) { '1' }
     let(:activated_flag) { true }
 
-    describe 'if success' do
+    context 'when success' do
       it 'saves new user' do
-        expect do
-          post_create
-        end.to change(User, :count).by(1)
+        expect { action }.to change(User, :count).by(1)
       end
 
       it 'redirects the :create template if success' do
-        post_create
+        action
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to("/users/#{user.id}")
       end
 
-      it 'redirects the :other template if forwarding_url is stored in session' do
-        session[:forwarding_url] = root_url
-        post_create
-        expect(response).to have_http_status(:redirect)
-        expect(response).to redirect_to('/')
-
-        expect(session[:forwarding_url]).not_to be
+      context 'when forwarding_url is stored in session' do
+        let(:store_forwarding_url) do
+          session[:forwarding_url] = root_url
+        end
+        before(:each) do
+          store_forwarding_url
+          action
+        end
+        it 'redirects root_url' do
+          expect(response).to have_http_status(:redirect)
+          expect(response).to redirect_to('/')
+        end
       end
 
       it 'doesnt flash' do
-        post_create
+        action
         expect(flash).to be_empty
       end
 
-      it 'contains user_id in session to confirm log_in method' do
-        expect(session[:user_id]).not_to be
-        post_create
+      it 'stores logged_in' do
+        action
         expect(session[:user_id]).to eq user.id
       end
 
-      it 'should contain non-empty flash' do
-        post_create
-        expect(flash).to be_empty
-      end
-
-      it 'should work contain non-empty cookies' do
-        post_create
+      # REVIEW: Is it all right to test cookies??
+      it 'checks non-empty cookies' do
+        action
         assigned_user = assigns(:user)
         # see https://stackoverflow.com/a/5482517/8774173
         jar = request.cookie_jar
@@ -80,69 +78,61 @@ RSpec.describe SessionsController, type: :controller do
         ).to eq assigned_user.remember_token
       end
 
-      describe 'when checkbox is true' do
+      context 'when checkbox is true' do
         let(:remember_me_flag) { '1' }
+        before(:each) { action }
         it 'contains remember_token, remember_digest attr and cookies' do
-          post_create
-          assigned_user = assigns(:user)
-          expect(assigned_user.remember_token).to be
-          expect(assigned_user.remember_digest).to be
+          expect(assigns(:user).remember_token).to be
+          expect(assigns(:user).remember_digest).to be
+          expect(response.cookies).not_to be_empty
         end
       end
 
-      describe 'when checkbox is false' do
+      context 'when checkbox is false' do
         let(:remember_me_flag) { '0' }
+        before(:each) { action }
         it 'doesnt contains remember_token, remember_digest attr and cookies' do
-          post_create
           assigned_user = assigns(:user)
-          expect(assigned_user.remember_token).not_to be
-          expect(assigned_user.remember_digest).not_to be
+          expect(assigns(:user).remember_token).not_to be
+          expect(assigns(:user).remember_digest).not_to be
           expect(response.cookies).to be_empty
         end
       end
 
       it 'assigns last user' do
-        post_create
+        action
         expect(assigns(:user)).to eq User.last
       end
     end
 
-    describe 'when failure' do
-      let(:expect_render_new) do
-        expect(response).to have_http_status(:success)
-        expect(response).to render_template('sessions/new')
-      end
+    context 'when failure' do
+      before(:each) { action }
 
-      let(:expect_danger_flash) do
-        expect(flash[:danger]).to be
-      end
-      before(:each) do
-        post_create
-      end
-
-      describe 'if email failure' do
+      context 'when fails the email' do
         let(:user_email) { 'dummy' }
         it 'renders the sessions/new template' do
-          expect_render_new
+          expect(response).to have_http_status(:success)
+          expect(response).to render_template('sessions/new')
         end
 
         it 'flash danger' do
-          expect_danger_flash
+          expect(flash[:danger]).to be
         end
       end
 
-      describe 'if password failure' do
+      context 'when fails the password' do
         let(:user_password) { 'dummy' }
         it 'renders the sessions/new template' do
-          expect_render_new
+          expect(response).to have_http_status(:success)
+          expect(response).to render_template('sessions/new')
         end
 
         it 'flash danger' do
-          expect_danger_flash
+          expect(flash[:danger]).to be
         end
       end
 
-      describe 'if unactivated user' do
+      context 'when unactivated user' do
         let(:activated_flag) { false }
         it 'renders the sessions/new template' do
           expect(flash[:warning]).to be
@@ -159,39 +149,54 @@ RSpec.describe SessionsController, type: :controller do
   describe 'DELETE #destroy' do
     let!(:user) { create(:user) }
 
-    let(:delete_user) do
-      delete :destroy, params: { id: user.id }
+    let(:stubbed_current_user) do
+      allow(controller).to receive(:current_user).and_return(current_user_flag)
     end
 
+    let(:action) do
+      delete :destroy, params: { id: user_id }
+    end
+
+    # default
+    let(:user_id) { user.id }
+    let(:current_user_flag) { user }
+
     it 'doesnt change User.count' do
-      expect { delete_user }.to change(User, :count).by(0)
+      expect { action }.to change(User, :count).by(0)
     end
 
     it 'returns http success' do
-      delete_user
+      action
       expect(response).to have_http_status(:redirect)
       expect(response).to redirect_to('/')
     end
 
-    it 'forgets remember_digests' do
-      other = create(:other, remember_token: 'dummy')
-      session[:user_id] = other.id
-      delete :destroy, params: { id: other.id }
-      expect(other.remember_digest).not_to be
-    end
+    context 'when current_user exists' do
+      let(:user) { create(:user, remember_token: 'dummy_token') }
+      let(:store_user_id) { session[:user_id] = user.id }
+      let(:store_cookies) do
+        request.cookies['user_id'] = 10
+        request.cookies['remember_token'] = 'dummy'
+      end
 
-    it 'deletes session' do
-      session[:user_id] = user.id
-      delete_user
-      expect(session[:user_id]).not_to be
-    end
+      before(:each) do
+        store_user_id
+        store_cookies
+        action
+      end
 
-    it 'deletes cookies' do
-      request.cookies['user_id'] = 10
-      request.cookies['remember_token'] = 'dummy'
-      delete_user
-      expect(response.cookies['user_id']).not_to be
-      expect(response.cookies['remember_token']).not_to be
+      it 'forgets remember digests' do
+        expect(user.remember_digest).not_to be
+      end
+
+      it 'deletes session' do
+        expect(session[:user_id]).not_to be
+      end
+
+      it 'deletes cookies' do
+        expect(response.cookies['user_id']).not_to be
+        expect(response.cookies['remember_token']).not_to be
+      end
     end
   end
 end
