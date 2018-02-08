@@ -8,7 +8,7 @@
 
 + http://api.rubyonrails.org/
 
-+ http://www.rubydoc.info/gems/rack
++ http://www.rubydoc.info/github/rack/rack/
 
 + http://rspec.info/documentation/3.7/rspec-rails/
 
