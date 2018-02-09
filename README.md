@@ -50,6 +50,16 @@ Be careful to add the following code in `app/assets/javascripts/application.js`:
 
 See also the link https://github.com/twbs/bootstrap-sass
 
+---
+
++ pry, pry-byebug
+
+The pry gem is the powerful REPL compared with irb. See detail in https://github.com/pry/pry.
+
+Pry-byebug is the pry version of byebug.( https://github.com/deivid-rodriguez/pry-byebug )
+
+If you use these gems, add `gem 'pry'` and `gem 'pry-byebug'` in Gemfile.
+
 
 ### Database setting for development & test.
 
