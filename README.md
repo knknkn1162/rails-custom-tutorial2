@@ -60,6 +60,8 @@ Pry-byebug is the pry version of byebug.( https://github.com/deivid-rodriguez/pr
 
 If you use these gems, add `gem 'pry'` and `gem 'pry-byebug'` in Gemfile.
 
+Note) By default, while byebug is watching, typing just `n` doesnt move onto the next, which should be actually `next`. To avoid this redundancy, configure as following section, https://github.com/deivid-rodriguez/pry-byebug#matching-byebug-behaviour.
+
 
 ### Database setting for development & test.
 
