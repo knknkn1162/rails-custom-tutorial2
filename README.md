@@ -6,6 +6,8 @@
 
 :loudspeaker: Make it a rule to refer primary sources, official documents!! 
 
++ http://ruby-doc.org/ latest stable version is 2.5.0!
+
 + http://api.rubyonrails.org/
 
 + http://www.rubydoc.info/github/rack/rack/
