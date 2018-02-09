@@ -16,6 +16,10 @@
 
 ## Preparation
 
++ rbenv
+
+To upgrade version of ruby via homebrew, see https://github.com/rbenv/rbenv#upgrading-with-homebrew.
+
 ### Gems
 
 + Rspec-rails
