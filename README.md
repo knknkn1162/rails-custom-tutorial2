@@ -10,6 +10,8 @@
 
 + http://api.rubyonrails.org/
 
++ http://www.rubydoc.info/github/rubygems/rubygems how to use gem.
+
 + http://www.rubydoc.info/github/rack/rack/
 
 + http://rspec.info/documentation/3.7/rspec-rails/
