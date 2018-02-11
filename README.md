@@ -24,6 +24,10 @@
 
 To upgrade version of ruby via homebrew, see https://github.com/rbenv/rbenv#upgrading-with-homebrew.
 
++ neovim configration
+
+see https://github.com/knknkn1162/dotfiles/tree/499e1875f80baac4c3b88ff326146adead692d2b/.config/nvim in detail.
+
 ### Gems
 
 + Rspec-rails
