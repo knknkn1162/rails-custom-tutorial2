@@ -18,6 +18,10 @@
 
 + http://www.rubydoc.info/github/teamcapybara/capybara/master
 
+---
+
++ http://pubs.opengroup.org/onlinepubs/9699919799/ .. POSIX.1-2008 defines a standard operating system interface and environment, including a command interpreter (or “shell”), and common utility programs to support applications portability at the source code level.
+
 ## Preparation
 
 + rbenv
