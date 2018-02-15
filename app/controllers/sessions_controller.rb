@@ -1,6 +1,4 @@
 class SessionsController < ApplicationController
-  include UsersHelper
-
   def new
   end
 
@@ -27,7 +25,7 @@ class SessionsController < ApplicationController
 
   def destroy
     @user = current_user
-    forget || forget_log_in_session if @user
+    forget && forget_log_in_session if @user
     redirect_to root_url
   end
 

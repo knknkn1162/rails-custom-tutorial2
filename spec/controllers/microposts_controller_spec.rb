@@ -1,30 +1,44 @@
 require 'rails_helper'
 
 RSpec.describe MicropostsController, type: :controller do
-  let(:logged_in_user_ok) do
-    allow(controller).to receive(:logged_in_user).and_return(true)
+  let(:stubbed_current_user) do
+    allow(controller).to receive(:current_user).and_return(user)
   end
+
+  # stub before_action
+  let(:stubbed_logged_in_user) do
+    allow(controller).to receive(:logged_in_user).and_return(logged_in_flag)
+  end
+
+  # default
+  let(:logged_in_flag) { true }
 
   describe 'POST #create' do
     let(:user) { create(:user) }
     let(:micropost) { build(:micropost) }
+
     let(:action) do
       post :create, params: {
         micropost: { content: content }
       }, session: {}
     end
+
+    # default
     let(:content) { micropost.content }
 
-    let(:stubbed_current_user) do
-      allow(controller).to receive(:current_user).and_return(user)
-    end
-
     before(:each) do
-      logged_in_user_ok
+      stubbed_logged_in_user
       stubbed_current_user
     end
 
-    describe 'when it saves successfully' do
+    context 'when before_action calls' do
+      it 'calls logged_in_user' do
+        expect(controller).to receive(:logged_in_user)
+        action
+      end
+    end
+
+    context 'when success' do
       it 'saves the micropost' do
         expect { action }.to change(Micropost, :count).by(1)
       end
@@ -41,7 +55,7 @@ RSpec.describe MicropostsController, type: :controller do
       end
     end
 
-    describe 'when failure' do
+    context 'when failure' do
       let(:content) { ' ' }
       it 'doesnt save the micropost' do
         expect { action }.to change(Micropost, :count).by(0)
@@ -61,25 +75,30 @@ RSpec.describe MicropostsController, type: :controller do
   end
 
   describe 'DELETE #destroy' do
-    let(:stubbed_current_user) do
-      allow(controller).to receive(:current_user).and_return(user)
-    end
     let(:user) do
-      create(:user_with_microposts, microposts_count: 5)
+      create(:user_with_microposts, microposts_count: 2)
     end
+
     let(:action) do
       delete :destroy, params: { id: micropost_id }
     end
 
     before(:each) do
       stubbed_current_user
-      logged_in_user_ok
+      stubbed_logged_in_user
     end
 
     # default
     let(:micropost_id) { user.microposts[0] }
 
-    describe 'when no microposts' do
+    context 'when before_action calls' do
+      it 'calls logged_in_user' do
+        expect(controller).to receive(:logged_in_user)
+        action
+      end
+    end
+
+    context 'when no microposts' do
       let(:micropost_id) { -1 }
       it 'redirects to root_url' do
         action
@@ -92,7 +111,7 @@ RSpec.describe MicropostsController, type: :controller do
       end
     end
 
-    describe 'when micropost exist' do
+    context 'when micropost exist' do
       it 'redirect_to root_url' do
         action
         expect(response).to have_http_status(:redirect)
@@ -110,61 +129,47 @@ RSpec.describe MicropostsController, type: :controller do
     end
   end
 
-  describe 'check before_action method' do
+  context 'check logged_in_user method' do
+    # NOTE: If using `controller.send(:logged_in_user)`, Module::DelegationError occurs at `redirect_to login_url`. Define anonymous controller instead!
     controller do
-      def create
-      end
+      def create; end
+    end
+    before(:each) do
+      stubbed_logged_in?
+    end
 
-      def destroy
-      end
+    let(:action) do
+      post :create, params: {}, session: {}
     end
 
     let(:stubbed_logged_in?) do
       allow(controller).to receive(:logged_in?).and_return(logged_in_flag)
     end
 
-    describe 'when logged_in_user' do
-      before(:each) do
-        stubbed_logged_in?
+    # default
+    let(:logged_in_flag) { false }
+
+    context 'when logged in' do
+      before(:each) { action }
+      it 'flashes danger' do
+        expect(flash[:danger]).to be
+      end
+
+      it 'stored forwarding_url in session' do
+        expect(session[:forwarding_url]).to eq root_url + 'microposts'
+      end
+
+      it 'redirects login path if login fails' do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to('/login')
+      end
+    end
+
+    context 'when not logged_in' do
+      let(:logged_in_flag) { true }
+      it 'has #create calls' do
+        expect(controller).to receive(:create)
         action
-      end
-
-      describe 'when #create' do
-        let(:action) do
-          post :create, params: {}, session: {}
-        end
-        let(:logged_in_flag) { false }
-        it 'flash before #update if login fails' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'stored forwarding_url in session' do
-          expect(session[:forwarding_url]).to eq root_url + 'microposts'
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
-      end
-
-      describe 'when #destroy' do
-        let(:action) do
-          delete :destroy, params: { id: 0 }
-        end
-        let(:logged_in_flag) { false }
-        it 'flash before #update if login fails' do
-          expect(flash[:danger]).to be
-        end
-
-        it 'stored forwarding_url in session' do
-          expect(session[:forwarding_url]).to eq root_url + 'microposts/0'
-        end
-
-        it 'redirects login path if login fails' do
-          expect(response).to have_http_status(:redirect)
-          expect(response).to redirect_to('/login')
-        end
       end
     end
   end

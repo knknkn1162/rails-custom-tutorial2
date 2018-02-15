@@ -1,47 +1,63 @@
 require 'rails_helper'
 
 RSpec.describe SessionsHelper, type: :helper do
-  describe 'set_log_in_session test' do
-    it 'tests set_log_in' do
-      user = instance_double('User', id: 10)
-      set_log_in_session(user)
-      expect(session[:user_id]).to eq 10
+  let(:forwarding_url) { '/dummy' }
+  let(:user_id) { 100 }
+
+  describe 'set_log_in_session' do
+    let(:user) { create(:user) }
+    before(:each) do
+      helper.set_log_in_session(user)
+    end
+    it 'sets user_id hash' do
+      expect(session[:user_id]).to eq user.id
     end
   end
 
-  describe 'get_log_in_session test' do
-    it 'tests get_log_in' do
-      session[:user_id] = 100
-      expect(get_log_in_session).to eq 100
+  describe 'get_log_in_session' do
+    before(:each) do
+      session[:user_id] = user_id
+    end
+    it 'gets user_id hash' do
+      expect(helper.get_log_in_session).to eq user_id
     end
   end
 
-  describe 'forget_log_in_session test' do
-    it 'tests forget_log_in_session' do
-      session[:user_id] = 100
-      forget_log_in_session
-      expect(session).to be_empty
+  describe 'forget_log_in_session' do
+    let(:user_id) { 100 }
+    before(:each) do
+      session[:user_id] = user_id
+      helper.forget_log_in_session
+    end
+    it 'deletes user_id hash' do
+      expect(helper.session).to be_empty
     end
   end
 
-  describe 'store_location test' do
-    it 'succeeds' do
-      store_location('/dummy')
+  describe 'store_location' do
+    before(:each) do
+      helper.store_location('/dummy')
+    end
+    it 'stores forwaring_url hash' do
       expect(session[:forwarding_url]).to eq '/dummy'
     end
   end
 
   describe 'get_location test' do
-    it 'succeeds' do
-      session[:forwarding_url] = 'dummy'
-      expect(get_location).to eq 'dummy'
+    before(:each) do
+      session[:forwarding_url] = forwarding_url
+    end
+    it 'gets forwarding_url hash' do
+      expect(helper.get_location).to eq forwarding_url
     end
   end
 
   describe 'delete_location test' do
-    it 'succeeds' do
-      session[:forwarding_url] = 'dummy'
-      delete_location
+    before(:each) do
+      session[:forwarding_url] = forwarding_url
+      helper.delete_location
+    end
+    it 'deletes forwarding_url hash' do
       expect(session).to be_empty
     end
   end

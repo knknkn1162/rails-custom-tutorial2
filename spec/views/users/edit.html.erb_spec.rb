@@ -2,22 +2,33 @@ require 'rails_helper'
 
 RSpec.describe 'users/edit', type: :view do
   before(:each) do
-    assign(:user, build(:user))
-  end
-  it 'displays title' do
-    render template: 'users/edit', layout: 'layouts/application'
-    expect(rendered).to have_title full_title('Edit user')
+    inject_user
+    render template: 'users/edit', layout: layout
   end
 
-  it 'renders form partial' do
-    render
-    expect(rendered).to render_template partial: 'users/_form'
-    expect(rendered).to render_template partial: 'shared/_error_messages'
+  let(:inject_user) do
+    assign(:user, create(:user))
   end
 
-  it 'renders gravatar edit' do
-    render
-    expect(rendered).to have_selector('div.gravatar_edit img')
-    expect(rendered).to have_selector('div.gravatar_edit a', text: 'change')
+  let(:layout) { false }
+
+  context 'when partials of layouts/application is also rendered' do
+    let(:layout) { 'layouts/application' }
+    it 'displays title' do
+      expect(rendered).to have_title full_title('Edit user')
+    end
+  end
+
+  context 'when no layouts' do
+    it 'renders form partial' do
+      ['users/_form', 'shared/_error_messages'].each do |partial|
+        expect(rendered).to render_template partial: partial
+      end
+    end
+
+    it 'renders gravatar edit' do
+      expect(rendered).to have_selector('div.gravatar_edit img')
+      expect(rendered).to have_selector('div.gravatar_edit a', text: 'change')
+    end
   end
 end

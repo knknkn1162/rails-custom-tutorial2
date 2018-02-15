@@ -1,7 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe 'users/index', type: :view do
-  let!(:others) { create_list(:other, 31) }
+  before(:each) do
+    stubbed_current_user
+    inject_users
+    render template: 'users/index', layout: layout
+  end
+
+  let(:others) { create_list(:other, per_page + 1) }
 
   # current_user? and admin_current_user? depends on helper.current_user method
   # The method chain expression seems to be invalid!
@@ -9,55 +15,29 @@ RSpec.describe 'users/index', type: :view do
     allow(view).to receive(:current_user).and_return(others[0])
   end
 
-  describe 'when pagination doesnt render' do
-    before do
-      stubbed_current_user
-      # NOTE: default users per-page is 30
-      assign(:users, User.paginate(page: 1, per_page: 50))
-    end
+  # injection
+  let(:inject_users) { assign(:users, users) }
 
-    it 'displays title' do
-      render template: 'users/index', layout: 'layouts/application'
-      expect(rendered).to have_title full_title('All users')
-    end
+  let(:layout) { false }
+  let(:per_page) { 5 }
 
-    it 'renders form partial' do
-      render
-      expect(rendered).to render_template partial: 'users/_user'
-    end
+  context 'when pagination renders' do
+    let(:users) { User.paginate(page: 1, per_page: per_page) }
 
-    it 'displays pagination' do
-      render
-      expect(rendered).not_to have_selector('div.pagination')
-    end
-
-    describe 'users/_user', type: :view do
-      it 'renders list of 20, users' do
-        stubbed_current_user
-        render
-        expect(rendered).to have_selector('ul.users li', count: 31)
-        expect(rendered).to have_selector('ul.users a', count: 31)
+    context 'when renders layout' do
+      let(:layout) { 'layouts/application' }
+      it 'displays title' do
+        expect(rendered).to have_title full_title('All users')
       end
     end
-  end
 
-  describe 'when pagination renders' do
-    let(:users) { User.paginate(page: 1, per_page: 20) }
-    before(:each) do
-      stubbed_current_user
-      # NOTE: default users per-page is 30
-      assign(:users, users)
-      render
-    end
+    context 'when no layouts' do
+      it 'displays pagination' do
+        expect(rendered).to have_selector('div.pagination', count: 2)
+      end
 
-    it 'displays pagination' do
-      expect(rendered).to have_selector('div.pagination', count: 2)
-    end
-
-    describe 'users/_user', type: :view do
-      it 'renders list of 20, users' do
-        expect(rendered).to have_selector('ul.users li', count: 20)
-        expect(rendered).to have_selector('ul.users a', count: 20)
+      it 'renders list of 5 users link' do
+        expect(rendered).to have_selector('ul.users li', count: per_page)
       end
     end
   end

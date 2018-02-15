@@ -1,5 +1,4 @@
 class StaticPagesController < ApplicationController
-  include UsersHelper
   def home
     if logged_in?
       @micropost = current_user.microposts.build
