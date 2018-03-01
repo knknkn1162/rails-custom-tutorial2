@@ -28,9 +28,23 @@
 
 To upgrade version of ruby via homebrew, see https://github.com/rbenv/rbenv#upgrading-with-homebrew.
 
+Note) When you change ./zshrc, exec `exec $SHELL -l`.
+
 + neovim configration
 
 see https://github.com/knknkn1162/dotfiles/tree/499e1875f80baac4c3b88ff326146adead692d2b/.config/nvim in detail.
+
+Note) Some plugins requires `neovim` plugin in python3, e.g) Shougo/deoplete.nvim. See detail in each documentation.
+
+### settings for iterm2
+
++ Customize non-ascii font. See https://github.com/powerline/fonts.
+
++ Make cursor faster. set `system_preference` -> `keyboard` -> `cursor speed`
+
++ Increase the number of the scrollback buffer.
+
++ Set system-wide hotkey.
 
 ### Gems
 
