@@ -152,6 +152,10 @@ see `config/database.yml`!
 
 ## development
 
+### about rails
+
++ when you set the controller under the designated directory, execute `rails generate controller operators::SampleModel`. Be careful that the directory name is a plural word.
+
 ### model
 
 + to confirm data model not to change database, exec `rails console --sandbox`. Also the command, `rails db:console` enables direct connection to database. 
